@@ -23,7 +23,7 @@ console.log("Server Started");
 
 var SOCKET_LIST = {};
 
-
+//Debug = false when live
 var DEBUG = true;
 
 var io = require('socket.io')(server,{});
