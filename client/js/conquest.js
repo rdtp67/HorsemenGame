@@ -17,18 +17,23 @@ var Conquest = function(initPack){
 }
 
 var conquest_update = function(data){
-    for(var i in data.conquest_deck){
-			var pack = data.conquest_deck[i];
-			var p = Conquest.list[pack.card.id];
+
+	for(var k = 0; k < data.conquest_deck.length; k++){
+			var pack = data.conquest_deck[k];
+			var p = Conquest.list[pack.run.card.id];
 			if(p){
-				if(pack.cost !== undefined)
-					p.cost = pack.card.cost;
-                if(pack.event !== undefined)
-                    p.event = pack.event;
+				if(pack.run.cost !== undefined){
+					p.cost = pack.run.cost;
+				}
+				if(pack.event !== undefined){
+					p.event = pack.event;
+				}
 			}
-    }
+		}
+
 }
 
+//Needs to be tested
 var conquest_remove = function(data){
     for(var i = 0 ; i < data.conquest_deck.length; i++){
 			delete Conquest.list[data.conquest_deck[i]];

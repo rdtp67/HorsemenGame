@@ -3,8 +3,7 @@ require('./card_s.js');
 Run = function(rid, rtype, rname){
 
 	var self = Card(rid, rtype, rname);
-	self.desc = '';
-	self.cost = 0;
+
 
 	self.getInitPackRun = function(){
 		return {

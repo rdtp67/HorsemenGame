@@ -82,6 +82,6 @@ Plague.getPlagueCardAction = function(id,player){
 var h7 = Plague(count, 'Run1', function(){return;});
 var h8 = Plague(count, 'Run2', function(){return;});
 var h9 = Plague(count, 'Run3', function(){return;});
-var h10 = Plague('p1', 'PlagueAddPC',  function(player){
+var h10 = Plague(count, 'PlagueAddPC',  function(player){
     player.power_crystal++;
 });

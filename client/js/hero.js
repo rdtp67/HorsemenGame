@@ -1,17 +1,11 @@
 var Hero = function(initPack){
 		var self = {};
 		self.id = initPack.card.id;
-		self.card_type = initPack.card.card_type;
 		self.horsemen_type = initPack.card.horsemen_type;
-		self.title = initPack.card.title;
+		self.title = initPack.card.name;
         self.attack = initPack.attack;
         self.defense = initPack.defense;
         self.dodge = initPack.dodge;
-		
-		self.draw = function(w, h){
-			ctx.fillStyle = 'white';
-			ctx.fillText("Title: " + self.title + " ID: " + self.id, w, h);
-		}
 		
 		Hero.list[self.id] = self;
 		return self;

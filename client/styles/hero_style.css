@@ -1,0 +1,27 @@
+div.tempSwitch_c{
+    position: absolute;
+    left: 1320;
+    top: 700;
+}
+
+div.h_header{
+    position: absolute;
+    left: 50;
+    top: 50;
+}
+
+canvas.hero_c{
+    position:absolute;
+    left:8px;
+    top:8px;
+    border:1px solid #0000ff;
+}
+
+#hero_cards{
+    position:absolute;
+    left:200;
+    top:200;
+    width:1100;
+    height:400;
+    border:1px solid #00ff00;
+}

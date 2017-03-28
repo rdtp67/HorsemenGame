@@ -3,11 +3,11 @@ require('./card_s.js');
 var initPack_hero = {hero_l:[]};
 var removePack_hero = {hero_l:[]};
 
-Hero = function(hid, htype, htitle){
-	var self = Card(hid, 'Hero', htype, htitle);
-	self.attack = 0;
-	self.defense = 0;
-	self.dodge = 0;
+Hero = function(hid, htype, htitle, hatk, hdef, hdodge){
+	var self = Card(hid, htype, htitle);
+	self.attack = hatk;
+	self.defense = hdef;
+	self.dodge = hdodge;
 
 	self.getInitPack = function(){
 		return {
@@ -75,4 +75,7 @@ Hero.getAllInitPack = function(){
 }
 
 
-var h1 = Hero(hero_count, 'Death', 'Hero1');
+var h1 = Hero(hero_count, 'Death', 'DeathHero1', 0, 0, 0);
+var h2 = Hero(hero_count, 'War', 'WarHero2', 1, 1, 1);
+var h3 = Hero(hero_count, 'Plague', 'PlagueHero3', 2, 2, 2);
+var h4 = Hero(hero_count, 'Conquest', 'ConquestHero4', 3, 3, 3);

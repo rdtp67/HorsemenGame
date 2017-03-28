@@ -1,8 +1,9 @@
-Player_Hero = function(socket){
+Player_Hero = function(socket, server){
 
     var self = {
         id:null,
 	    socket:socket,
+        server:server,
     }
 
     self.addCard = function(id){
@@ -12,37 +13,48 @@ Player_Hero = function(socket){
     }
 
     self.getStats = function(){
+        if(Hero.list[self.id]){
+            let item = Hero.list[self.id];
 
-        let item = Item_Hero.List[self.id];
-
-        return {
-            name:item.name,
-            attack:item.attack,
-            defense:item.defense,
-            dodge:item.dodge,
-        };
+            return {
+                name:item.name,
+                attack:item.attack,
+                defense:item.defense,
+                dodge:item.dodge,
+            };   
+        }
     }
     
     self.refreshRender = function(){
 		//server
-		if(self.socket){
+		if(self.server){
 			self.socket.emit('updateHeroCards', self.id);
 			return;
 		}
 		
         //client only
-        var str = "";
-            let item = Item_Hero.List[self.id];
-            let onclick = "Item_Hero.List['" + item.id + "'].event()";
-            str += "<button onclick=\"" + onclick + "\">" + item.name + " </button><br>";      
+        /*var str = "";
+            let item = Hero.list[self.id];
+            let onclick = "Hero.List['" + item.id + "'].event()";
+            str += "<button onclick=\"" + onclick + "\">" + item.name + " </button><br>";   
 
-        document.getElementById('user_hero').innerHTML = str;
+        document.getElementById('user_hero').innerHTML = str;*/
 
+        /*var invent = document.getElementById("user_hero");
+        invent.innerHTML = "";
+            let item = Hero.list[self.id];
+            let button = document.createElement('button');
+            button.onclick = function(){
+                //getCardFunc(item.id, item.horsemen_type);
+            }
+            button.innerText = item.name;
+            invent.appendChild(button);*/
     }
 
     return self;
 
 }
+
 
 Item_Hero = function(id,name, attack, defense, dodge, event){
     var self = {

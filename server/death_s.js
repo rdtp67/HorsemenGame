@@ -82,6 +82,6 @@ Death.getDeathCardAction = function(id,player){
 var h7 = Death(count, 'Run1', function(){return;});
 var h8 = Death(count, 'Run2', function(){return;});
 var h9 = Death(count, 'Run3', function(){return;});
-var h10 = Death('d1', 'DeathLoseLife',  function(player){
+var h10 = Death(count, 'DeathLoseLife',  function(player){
     player.health--;
 });

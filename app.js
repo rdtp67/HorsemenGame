@@ -71,6 +71,8 @@ setInterval(function(){
 	var pack_plague = Plague.getFrameUpdateDataPlague();
 	var pack_war = War.getFrameUpdateDataWar();
 	var pack_conquest = Conquest.getFrameUpdateDataConquest();
+	var pack_run_update = {death:pack_death.updatePack_death,plague:pack_plague.updatePack_plague,war:pack_war.updatePack_war,conquest:pack_conquest.updatePack_conquest}
+	var pack_run_remove = {death:pack_death.removePack_death,plague:pack_plague.removePack_plague,war:pack_war.removePack_war,conquest:pack_conquest.removePack_conquest};
 	for(var i in SOCKET_LIST){
 		var socket = SOCKET_LIST[i];
 		socket.emit('init',pack_player.initPack);
@@ -81,20 +83,7 @@ setInterval(function(){
 		socket.emit('update_hero',pack_hero.updatePack_hero);
 		socket.emit('remove_hero',pack_hero.removePack_hero);
 
-		socket.emit('init_death',pack_death.initPack_death);
-		socket.emit('update_death',pack_death.removePack_death);
-		socket.emit('remove_death',pack_death.updatePack_death);
-
-		socket.emit('init_plague',pack_plague.initPack_plague);
-		socket.emit('update_plague',pack_plague.removePack_plague);
-		socket.emit('remove_plague',pack_plague.updatePack_plague);
-
-		socket.emit('init_war',pack_war.initPack_war);
-		socket.emit('update_war',pack_war.removePack_war);
-		socket.emit('remove_war',pack_war.updatePack_war);
-
-		socket.emit('init_conquest',pack_conquest.initPack_conquest);
-		socket.emit('update_conquest',pack_conquest.removePack_conquest);
-		socket.emit('remove_conquest',pack_conquest.updatePack_conquest);
+		socket.emit('update_run',pack_run_update);
+		socket.emit('remove_run',pack_run_remove);
 	}	
 }, 1000/25);

@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/client/styles/game_style.css">
+<link rel="stylesheet" href="/client/styles/hero_style.css">
 
 <div id="signDiv">
     Username: <input id="signDiv-username" type="text"></input><br>
@@ -8,19 +9,25 @@
 </div>
 
 <div id="heroPickDiv" style="display:none;">
-	<canvas id="ctx-hero" class="hero_c"></canvas>
+	<canvas id="ctx-hero" width="1500" height="800" class="hero_c"></canvas>
+
+	<div id="tempSwtich_d" class="tempSwitch_c">
+		<button id="tempSwitch_b">Temp Switch Page</button>
+	</div>
+
+	<div id="hero_cards"></div>
 </div>
 
 <div id="gameDiv" style="display:none;">
-	<canvas id="ctx" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui-player-hero" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui-enemy-hero" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui-player-keep" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui-cards-left" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui-cards-right" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui-cards-player" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
-	<canvas id="ctx-ui-cards-enemy" width="1500" height="800" style="position:absolute;left:8px;top:8px;border:1px solid #000000;"></canvas>
+	<canvas id="ctx" width="1500" height="800"></canvas>
+	<canvas id="ctx-ui" width="1500" height="800"></canvas>
+	<canvas id="ctx-ui-player-hero" width="1500" height="800"></canvas>
+	<canvas id="ctx-ui-enemy-hero" width="1500" height="800" ></canvas>
+	<canvas id="ctx-ui-player-keep" width="1500" height="800" ></canvas>
+	<canvas id="ctx-ui-cards-left" width="1500" height="800" ></canvas>
+	<canvas id="ctx-ui-cards-right" width="1500" height="800" ></canvas>
+	<canvas id="ctx-ui-cards-player" width="1500" height="800" ></canvas>
+	<canvas id="ctx-ui-cards-enemy" width="1500" height="800"></canvas>
 	
 	<div id="chat-text" style="width:1500px;margin-top:800px;height:100px;overflow-y:scroll">
 		<div>Hello!</div>
@@ -30,26 +37,26 @@
 		<input id="chat-input" type="text" style="width:1500px"></input>
 	</form>
 
-	<div id="user_cards" class="u_cards"></div>
-	<div id="user_hero" class="u_hero"></div>
-	<div id="death_deck" class="d_deck">
+	<div id="user_cards"></div>
+	<div id="user_hero"></div>
+	<div id="death_deck">
 		<button id="death_deck_btn" style="position:absolute;" onclick="deathClick()">
-			<img src="/client/img/death_card_temp.jpg" id="death_deck_pic" class="d_deck">
+			<img src="/client/img/death_card_temp.jpg" id="death_deck_pic" class="card">
 		</button>
 	</div>
-	<div id="plague_deck" class="p_deck">
+	<div id="plague_deck">
 		<button id="plague_deck_btn" style="position:absolute;" onclick="plagueClick()">
-			<img src="/client/img/plague_card_temp.jpg" id="plague_deck_pic" class="p_deck">
+			<img src="/client/img/plague_card_temp.jpg" id="plague_deck_pic" class="card">
 		</button>
 	</div>
-	<div id="war_deck" class="w_deck">
+	<div id="war_deck">
 		<button id="war_deck_btn" style="position:absolute;" onclick="warClick()">
-			<img src="/client/img/war_card_temp.jpg" id="war_deck_pic" class="w_deck">
+			<img src="/client/img/war_card_temp.jpg" id="war_deck_pic" class="card">
 		</button>
 	</div>
-	<div id="conquest_deck" class="c_deck">
+	<div id="conquest_deck">
 		<button id="conquest_deck_btn" style="position:absolute;" onclick="conquestClick()">
-			<img src="/client/img/conquest_card_temp.jpg" id="conquest_deck_pic" class="c_deck">
+			<img src="/client/img/conquest_card_temp.jpg" id="conquest_deck_pic" class="card">
 		</button>
 	</div>
 	
@@ -66,6 +73,7 @@
 <script src="/client/js/player_cards.js"></script>
 <script src="/client/js/player_hero.js"></script>
 <script src="/client/js/draw.js"></script>
+<script src="/client/js/draw_hero.js"></script>
 <script>
 
 	var socket = io();
@@ -88,10 +96,10 @@
         if(data.success){
             signDiv.style.display = 'none';
 			heroPickDiv.style.display = 'inline-block';
-            //gameDiv.style.display = 'inline-block';
+			createHeroPage();
         } else
             alert("Sign in unsuccessul.");
-    });
+    }); 
     socket.on('signUpResponse',function(data){
         if(data.success){
             alert("Sign up successul.");
@@ -99,8 +107,32 @@
             alert("Sign up unsuccessul.");
     });
 
+	/**** Images ****/
+	var Img = {};       
+	//Images
+	Img.background = new Image();
+	Img.background.src = '/client/img/temp_background.jpg';  
+	Img.background_hero = new Image();
+	Img.background_hero.src = '/client/img/temp_hero_background.jpg';  
+
 	/******* Hero Pick ******/
 	var ctx_hero = document.getElementById('ctx-hero').getContext('2d');
+	var tempSwitchBtn = document.getElementById('tempSwitch_b');
+	ctx_hero.font = '20px Arial';
+
+	var createHeroPage = function(){
+		if(heroPickDiv.style.display == 'inline-block'){
+			ctx_hero.clearRect(0,0,1500,800);
+			drawBackgroundHero();
+			drawHeroSelect();
+			drawPlayerHeroCards();//This is getting over-written to quickly	
+		}
+	}
+
+	tempSwitchBtn.onclick = function(){
+		heroPickDiv.style.display = 'none';
+    	gameDiv.style.display = 'inline-block';
+	}
 
 	/******* Chat *******/
 	var chatText = document.getElementById('chat-text');
@@ -132,7 +164,7 @@
 		playerCards.refreshRender();
 	});
 
-	var playerHero = new Player_Hero(null);
+	var playerHero = new Player_Hero(socket,false);
 	socket.on('updateHeroCards', function(id){
 		playerHero.id = id;
 		playerHero.refreshRender();
@@ -140,29 +172,28 @@
 
 	/****** Decks *******/
 	var deathClick = function(){
-		socket.emit('addDeathCard');
+		socket.emit('addRunCard', 'Death');
 		return;
 	}
 	
 	var plagueClick = function(){
-		socket.emit('addPlagueCard');
+		socket.emit('addRunCard', 'Plague');
 		return;
 	}
 
 	var warClick = function(){
-		socket.emit('addWarCard');
+		socket.emit('addRunCard', 'War');
 		return;
 	}
 
 	var conquestClick = function(){
-		socket.emit('addConquestCard');
+		socket.emit('addRunCard', 'Conquest');
 		return;
 	}
 	
 	/******* Game *******/
 	
 	//Vars
-	var Img = {};
 	var ctx = document.getElementById("ctx").getContext("2d");
 	var ctx_ui = document.getElementById("ctx-ui").getContext("2d");
 	var ctx_ui_player_hero = document.getElementById("ctx-ui-player-hero").getContext("2d");
@@ -174,16 +205,13 @@
 	var ctx_ui_cards_enemy = document.getElementById("ctx-ui-cards-enemy").getContext("2d");
 	var lastHealth = null;
 	var lastPowerCrystal = null;
+	var lastHeroName = null;
 	Player.list = {};
 	Hero.list = {};
 	Death.list = {};
 	Plague.list = {};
 	War.list = {};
 	Conquest.list = {};
-	
-	//Images
-	Img.background = new Image();
-	Img.background.src = '/client/img/temp_background.jpg';
 	
 	//Fonts
     ctx.font = '20px Arial';
@@ -229,84 +257,57 @@
 		hero_remove(data);
 	});
 
-	//Death Sockets
-	socket.on('init_death',function(data){	
+	//Run Sockets
+	socket.on('init_run',function(data){	
 		for(var k = 0; k < data.death_deck.length; k++){
 			new Death(data.death_deck[k]);
 		}
-	});
-	
-	socket.on('update_death',function(data){
-		death_update(data);
-
-	});
-	socket.on('remove_death',function(data){
-		death_remove(data);
-	});
-
-	//Plague Sockets
-	socket.on('init_plague',function(data){	
 		for(var k = 0; k < data.plague_deck.length; k++){
 			new Plague(data.plague_deck[k]);
 		}
-	});
-	
-	socket.on('update_plague',function(data){
-		plague_update(data);
-
-	});
-	socket.on('remove_plague',function(data){
-		plague_remove(data);
-	});
-
-	//War Sockets
-	socket.on('init_war',function(data){	
 		for(var k = 0; k < data.war_deck.length; k++){
 			new War(data.war_deck[k]);
 		}
-	});
-	
-	socket.on('update_war',function(data){
-		war_update(data);
-
-	});
-	socket.on('remove_war',function(data){
-		war_remove(data);
-	});
-
-	//Conquest Sockets
-	socket.on('init_conquest',function(data){	
 		for(var k = 0; k < data.conquest_deck.length; k++){
 			new Conquest(data.conquest_deck[k]);
 		}
 	});
-	
-	socket.on('update_conquest',function(data){
-		conquest_update(data);
 
+	socket.on('update_run',function(data){
+		death_update(data.death);
+		plague_update(data.plague);
+		war_update(data.war);
+		conquest_update(data.conquest);
 	});
-	socket.on('remove_conquest',function(data){
-		conquest_remove(data);
+	socket.on('remove_run',function(data){
+		death_remove(data.death);
+		plague_remove(data.plague);
+		war_remove(data.war);
+		conquest_remove(data.conquest);
 	});
 	
 	//Interval
 	setInterval(function(){		
-		if(!selfId)
+		if(!selfId) 
 			return;
-		ctx.clearRect(0,0,1500,800);
-		drawBackground();
-		drawPlayerHero();
-		drawEnemyHero();
-		drawCardsLeft();
-		drawCardsRight();
-		drawCardsPlayer();
-		drawCardsEnemy();
-		var height = 100;
-		var width = 500;
-		for(var i in Player.list){
-			Player.list[i].draw(width, height);
-			height +=100;
+		
+		if(gameDiv.style.display == 'inline-block'){
+			ctx.clearRect(0,0,1500,800);
+			drawBackground();
+			drawPlayerHero();
+			drawEnemyHero();
+			drawCardsLeft();
+			drawCardsRight();
+			drawCardsPlayer();
+			drawCardsEnemy();
+			var height = 100;
+			var width = 500;
+			for(var i in Player.list){
+				Player.list[i].draw(width, height);
+				height +=100;
+			}
 		}
+
 	},40);
 	
 

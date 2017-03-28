@@ -82,6 +82,6 @@ War.getWarCardAction = function(id,player){
 var h7 = War(count, 'Run1', function(){return;});
 var h8 = War(count, 'Run2', function(){return;});
 var h9 = War(count, 'Run3', function(){return;});
-var h10 = War('w1', 'WarLosePC',  function(player){
+var h10 = War(count, 'WarLosePC',  function(player){
     player.power_crystal--;
 });

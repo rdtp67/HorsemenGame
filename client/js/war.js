@@ -17,18 +17,23 @@ var War = function(initPack){
 }
 
 var war_update = function(data){
-    for(var i in data.war_deck){
-			var pack = data.war_deck[i];
-			var p = War.list[pack.card.id];
+
+	for(var k = 0; k < data.war_deck.length; k++){
+			var pack = data.war_deck[k];
+			var p = War.list[pack.run.card.id];
 			if(p){
-				if(pack.cost !== undefined)
-					p.cost = pack.card.cost;
-                if(pack.event !== undefined)
-                    p.event = pack.event;
+				if(pack.run.cost !== undefined){
+					p.cost = pack.run.cost;
+				}
+				if(pack.event !== undefined){
+					p.event = pack.event;
+				}
 			}
-    }
+		}
+
 }
 
+//Needs to be tested
 var war_remove = function(data){
     for(var i = 0 ; i < data.war_deck.length; i++){
 			delete War.list[data.war_deck[i]];

@@ -5,11 +5,11 @@ require('./death_s.js');
 require('./plague_s.js');
 require('./war_s.js');
 require('./conquest_s.js');
+require('./enums_s');
+
 
 var initPack = {player:[]};
 var removePack = {player:[]};
-
-
 
 Player = function(param){
 	var self = {
@@ -20,23 +20,23 @@ Player = function(param){
 	self.name = param.username;
 	self.id = param.id;
 	self.player_cards = new Player_Cards(param.socket, true);
-	self.player_hero = new Player_Hero(param.socket);
-	
-	self.player_hero.addCard('h1');
-	
+	self.player_hero = new Player_Hero(param.socket, true);
+	self.hero_type = card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
+
 	self.getInitPack = function(){
-		let stat = self.player_hero.getStats();
 		return {
 			id:self.id,
 			health:self.health,
 			power_crystal:self.power_crystal,	
 			name:self.name,		
+			h_type:self.hero_type,
 		};
 	}
 	
 	self.getUpdatePack = function(){
 		let stat = self.player_hero.getStats();
-		return {
+		if(stat !== undefined){
+			return {
 			id:self.id,
 			health:self.health,
 			power_crystal:self.power_crystal,
@@ -44,7 +44,15 @@ Player = function(param){
 			hero_attack:stat.attack,
 			hero_defense:stat.defense,
 			hero_dodge:stat.dodge,
-		};
+			};
+		}
+		else{
+			return{
+				id:self.id,
+				health:self.health,
+				power_crystal:self.power_crystal,
+			};
+		}
 	}
 
 	self.addCardtoInvent = function(id, type){
@@ -55,6 +63,10 @@ Player = function(param){
 	self.removeCardfromInvent = function(id){
 		self.player_cards.removeCard(id);
 		return;
+	}
+
+	self.assignHeroCard = function(id){
+		self.player_hero.addCard(id);
 	}
 	
 	Player.list[self.id] = self;
@@ -83,24 +95,16 @@ Player.onConnect = function(socket, name){
 			}
 		});
 		
-		socket.on('addDeathCard', function(){
-			player.addCardtoInvent('d1', 'Death');
-		});
-
-		socket.on('addPlagueCard', function(){
-			player.addCardtoInvent('p1', 'Plague');
-		});
-
-		socket.on('addWarCard', function(){
-			player.addCardtoInvent('w1', 'War');
-		});
-
-		socket.on('addConquestCard', function(){
-			player.addCardtoInvent('c1', 'Conquest');
+		socket.on('addRunCard', function(type){
+			player.addCardtoInvent(3, type);
 		});
 
 		socket.on('removeCards', function(data){
 			player.removeCardfromInvent(data);
+		});
+
+		socket.on('addPlayerHeroCard', function(id){
+			player.assignHeroCard(id);
 		});
 		
 		socket.emit('init',{
@@ -112,19 +116,10 @@ Player.onConnect = function(socket, name){
 			hero_l:Hero.getAllInitPack(),
 		});
 
-		socket.emit('init_death', {
+		socket.emit('init_run', {
 			death_deck:Death.getAllInitPackDeath(),
-		});
-
-		socket.emit('init_plague', {
 			plague_deck:Plague.getAllInitPackPlague(),
-		});
-
-		socket.emit('init_war', {
 			war_deck:War.getAllInitPackWar(),
-		});
-
-		socket.emit('init_conquest', {
 			conquest_deck:Conquest.getAllInitPackConquest(),
 		});
 

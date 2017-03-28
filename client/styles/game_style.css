@@ -1,10 +1,23 @@
-div.u_hero{
+canvas{
+    position:absolute;
+    left:8px;
+    top:8px;
+    border:1px solid #000000;
+}
+
+img.card{
+    height: 180px;
+    width: 160px;
+}
+
+
+#u_hero{
     position: absolute;
     left: 1050;
     top: 470;
 }
 
-div.u_cards{
+#user_cards{
     position: absolute;
     left: 220;
     top: 620;
@@ -12,56 +25,29 @@ div.u_cards{
     height: 160;
 }
 
-div.d_deck{
+#death_deck{
     position: absolute;
     left: 1320;
     top:620;
 }
 
-img.d_deck{
-    height: 180px;
-    width: 160px;
-}
-
-div.p_deck{
+#plague_deck{
     position: absolute;
     left: 20;
     top:620;
 }
 
-img.p_deck{
-    height: 180px;
-    width: 160px;
-}
-
-div.w_deck{
+#war_deck{
     position: absolute;
     left: 20;
     top: 20;
 }
 
-img.w_deck{
-    height: 180px;
-    width: 160px;
-}
 
-div.c_deck{
+#conquest_deck{
     position: absolute;
     left: 1320;
     top: 20;
 }
 
-img.c_deck{
-    height: 180px;
-    width: 160px;
-}
-
-canvas.hero_c{
-    width:1500px;
-    height:800px;
-    position:absolute;
-    left:8px;
-    top:8px;
-    border:1px solid #0000ff;
-}
 

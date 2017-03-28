@@ -5,6 +5,7 @@
 		self.name = initPack.name;
 		self.health = initPack.health;
 		self.power_crystal = initPack.power_crystal;
+		self.hero_type = initPack.h_type;
 		self.hero_name = initPack.hero_name;
 		self.hero_attack = initPack.hero_attack;
 		self.hero_defense = initPack.hero_defense;
@@ -12,10 +13,10 @@
 		
 		self.draw = function(w, h){
 			ctx.fillStyle = 'white';
-			ctx.fillText("Name: " + self.name + " Health: " + self.health + " Power Crystals: " 
+			ctx.fillText("Name: " + self.name + "Hero Type" + self.hero_type + " Health: " + self.health + " Power Crystals: " 
 			+ self.power_crystal + " ID: " + self.id, w, h);
 		}
-		
+				
 		Player.list[self.id] = self;
 		return self;
 	}

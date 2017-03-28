@@ -82,6 +82,6 @@ Conquest.getConquestCardAction = function(id,player){
 var h7 = Conquest(count, 'Run1', function(){return;});
 var h8 = Conquest(count, 'Run2', function(){return;});
 var h9 = Conquest(count, 'Run3', function(){return;});
-var h10 = Conquest('c1', 'ConquestAddLife',  function(player){
+var h10 = Conquest(count, 'ConquestAddLife',  function(player){
     player.health++;
 });
