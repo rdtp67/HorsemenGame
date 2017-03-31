@@ -123,6 +123,10 @@ Player.onConnect = function(socket, name){
 			conquest_deck:Conquest.getAllInitPackConquest(),
 		});
 
+		socket.emit('init_decks', {
+			deck_pack:Deck.getAllInitPackDeck(),
+		});
+
 }
 
 Player.getFrameUpdateData = function(){

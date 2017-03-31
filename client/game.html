@@ -63,6 +63,7 @@
 </div>
 
 <script src="/client/js/player.js"></script>
+\<script src="/client/js/deck.js"></script>
 <script src="/client/js/card.js"></script>
 <script src="/client/js/hero.js"></script>
 <script src="/client/js/death.js"></script>
@@ -119,6 +120,19 @@
 	var ctx_hero = document.getElementById('ctx-hero').getContext('2d');
 	var tempSwitchBtn = document.getElementById('tempSwitch_b');
 	ctx_hero.font = '20px Arial';
+
+	Deck.list = {};
+	socket.on('init_decks', function(data){
+		for(var k = 0; k < data.deck_pack.length; k++){
+			new Deck(data.deck_pack[k]);
+		}
+	});
+	socket.on('update_decks', function(data){
+		deck_update(data);
+	});
+	socket.on('remove_decks',function(data){
+		deck_remove(data);
+	});
 
 	var createHeroPage = function(){
 		if(heroPickDiv.style.display == 'inline-block'){

@@ -6,6 +6,7 @@ require('./server/player_s');
 require('./server/hero_s');
 require('./client/js/player_cards');
 require('./client/js/player_hero');
+require('./server/deck_s');
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/client/index.html');
@@ -65,6 +66,7 @@ io.sockets.on('connection', function(socket){
 });
 
 setInterval(function(){
+	var pack_decks = Deck.getFrameUpdateDataDeck();
 	var pack_player = Player.getFrameUpdateData();
 	var pack_hero = Hero.getFrameUpdateData();
 	var pack_death = Death.getFrameUpdateDataDeath();
@@ -85,5 +87,9 @@ setInterval(function(){
 
 		socket.emit('update_run',pack_run_update);
 		socket.emit('remove_run',pack_run_remove);
+
+		socket.emit('init_decks', pack_decks.initPack_deck);
+		socket.emit('update_decks', pack_decks.updatePack_deck);
+		socket.emit('remove_decks', pack_decks.removePack_deck);
 	}	
 }, 1000/25);
