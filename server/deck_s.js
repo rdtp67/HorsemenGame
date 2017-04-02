@@ -85,8 +85,8 @@ Deck.getDeckCardAction = function(id,player){
 }
 
 var h7 = Deck(0, 'Run1', 'Death', 'thing', 3, function(){return;});
-var h8 = Deck(1, 'Run2', 'ddd', 'thing', 3,function(){return;});
+var h8 = Deck(1, 'Run2', 'War', 'thing', 3,function(){return;});
 var h9 = Deck(2, 'Run3', 'Conquest', 'thing', 3,function(){return;});
-var h10 = Deck(3, 'DeckLoseLife',  'Shoop', 'sss', 4,function(player){
+var h10 = Deck(3, 'DeckLoseLife',  'Plague', 'sss', 4,function(player){
     player.health--;
 });

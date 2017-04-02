@@ -69,12 +69,6 @@ setInterval(function(){
 	var pack_decks = Deck.getFrameUpdateDataDeck();
 	var pack_player = Player.getFrameUpdateData();
 	var pack_hero = Hero.getFrameUpdateData();
-	var pack_death = Death.getFrameUpdateDataDeath();
-	var pack_plague = Plague.getFrameUpdateDataPlague();
-	var pack_war = War.getFrameUpdateDataWar();
-	var pack_conquest = Conquest.getFrameUpdateDataConquest();
-	var pack_run_update = {death:pack_death.updatePack_death,plague:pack_plague.updatePack_plague,war:pack_war.updatePack_war,conquest:pack_conquest.updatePack_conquest}
-	var pack_run_remove = {death:pack_death.removePack_death,plague:pack_plague.removePack_plague,war:pack_war.removePack_war,conquest:pack_conquest.removePack_conquest};
 	for(var i in SOCKET_LIST){
 		var socket = SOCKET_LIST[i];
 		socket.emit('init',pack_player.initPack);
@@ -84,9 +78,6 @@ setInterval(function(){
 		socket.emit('init_hero',pack_hero.initPack_hero);
 		socket.emit('update_hero',pack_hero.updatePack_hero);
 		socket.emit('remove_hero',pack_hero.removePack_hero);
-
-		socket.emit('update_run',pack_run_update);
-		socket.emit('remove_run',pack_run_remove);
 
 		socket.emit('init_decks', pack_decks.initPack_deck);
 		socket.emit('update_decks', pack_decks.updatePack_deck);

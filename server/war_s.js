@@ -1,3 +1,6 @@
+
+/* For reference only ~ can be deleted */
+
 require('./run_s.js');
 
 var initPack_war = {war_deck:[]};

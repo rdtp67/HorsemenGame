@@ -6,9 +6,9 @@ Player_Cards = function(socket, server){
     server:server,
     }
 
-    self.addCard = function(cid, ctype){
+    self.addCard = function(data){
         if(self.socket){
-            self.items.push({id:cid,type:ctype});
+            self.items.push({id:data.id,type:data.type,name:data.name});
             self.refreshRender();
             return;
         }
@@ -41,18 +41,18 @@ Player_Cards = function(socket, server){
         //client only
         var invent = document.getElementById("user_cards");
         invent.innerHTML = "";
-        var addButton = function(data, i){
-            let item = getRunCardItem(data, i);
+        var addButton = function(data){
+            //let item = getRunCardItem(data, i);
             let button = document.createElement('button');
             button.onclick = function(){
-                getCardFunc(item.id, item.horsemen_type);
+                getCardFunc(dat.id, data.type);
             }
-            button.innerText = item.name;
+            button.innerText = data.name;
             invent.appendChild(button);
         }
 
         for(var i = 0; i<self.items.length; i++){
-            addButton(self, i);
+            addButton(self.items[i]);
         }     
     }
 
@@ -86,29 +86,4 @@ Item("r1", "LoseLife", function(){
 var getCardFunc = function(id, type){
     socket.emit('cardAction', id, type);
     return;
-}
-
-var getRunCardItem = function(self, i){
-    var item;
-            if(self.items[i].type == 'Death')
-            {
-                item = Death.list[self.items[i].id];
-            }
-            else if(self.items[i].type == 'Plague')
-            {
-                item = Plague.list[self.items[i].id];
-            }
-            else if(self.items[i].type == 'War')
-            {
-                item = War.list[self.items[i].id];
-            }
-            else if(self.items[i].type == 'Conquest')
-            {
-                item = Conquest.list[self.items[i].id];
-            }
-            else 
-            {
-
-            }
-            return item;
 }

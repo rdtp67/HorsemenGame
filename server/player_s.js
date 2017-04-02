@@ -1,11 +1,8 @@
 require('./card_s.js');
 require('./hero_s.js');
 require('./run_s.js');
-require('./death_s.js');
-require('./plague_s.js');
-require('./war_s.js');
-require('./conquest_s.js');
 require('./enums_s');
+require('./deck_s.js');
 
 
 var initPack = {player:[]};
@@ -55,8 +52,8 @@ Player = function(param){
 		}
 	}
 
-	self.addCardtoInvent = function(id, type){
-		self.player_cards.addCard(id, type);
+	self.addCardtoInvent = function(type){
+		self.player_cards.addCard(Deck.list[3]);
 		return;
 	}
 
@@ -96,7 +93,7 @@ Player.onConnect = function(socket, name){
 		});
 		
 		socket.on('addRunCard', function(type){
-			player.addCardtoInvent(3, type);
+			player.addCardtoInvent(type);
 		});
 
 		socket.on('removeCards', function(data){
@@ -114,13 +111,6 @@ Player.onConnect = function(socket, name){
 
 		socket.emit('init_hero', {
 			hero_l:Hero.getAllInitPack(),
-		});
-
-		socket.emit('init_run', {
-			death_deck:Death.getAllInitPackDeath(),
-			plague_deck:Plague.getAllInitPackPlague(),
-			war_deck:War.getAllInitPackWar(),
-			conquest_deck:Conquest.getAllInitPackConquest(),
 		});
 
 		socket.emit('init_decks', {
@@ -171,52 +161,4 @@ Player.update = function(){
 	return pack;
 }
 
-var getRunCardAction = function(id, type, player){
-	if(type === 'Death')
-	{
-		for(var i in Death.list)
-		{
-			if(Death.list[i].id == id)
-			{
-				Death.getDeathCardAction(id,player);
-				player.removeCardfromInvent(Death.list[i].id);
-			}
-		}
-	}
-	else if(type === 'Plague')
-	{
-		for(var i in Plague.list)
-		{
-			if(Plague.list[i].id == id)
-			{
-				Plague.getPlagueCardAction(id,player);
-				player.removeCardfromInvent(Plague.list[i].id);
-			}
-		}
-	}
-
-	if(type === 'War')
-	{
-		for(var i in War.list)
-		{
-			if(War.list[i].id == id)
-			{
-				War.getWarCardAction(id,player);
-				player.removeCardfromInvent(War.list[i].id);
-			}
-		}
-	}
-
-	if(type === 'Conquest')
-	{
-		for(var i in Conquest.list)
-		{
-			if(Conquest.list[i].id == id)
-			{
-				Conquest.getConquestCardAction(id,player);
-				player.removeCardfromInvent(Conquest.list[i].id);
-			}
-		}
-	}
-}
 
