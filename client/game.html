@@ -66,10 +66,6 @@
 \<script src="/client/js/deck.js"></script>
 <script src="/client/js/card.js"></script>
 <script src="/client/js/hero.js"></script>
-<script src="/client/js/death.js"></script>
-<script src="/client/js/plague.js"></script>
-<script src="/client/js/war.js"></script>
-<script src="/client/js/conquest.js"></script>
 <script src="/client/js/socket.js"></script>
 <script src="/client/js/player_cards.js"></script>
 <script src="/client/js/player_hero.js"></script>
@@ -120,19 +116,6 @@
 	var ctx_hero = document.getElementById('ctx-hero').getContext('2d');
 	var tempSwitchBtn = document.getElementById('tempSwitch_b');
 	ctx_hero.font = '20px Arial';
-
-	Deck.list = {};
-	socket.on('init_decks', function(data){
-		for(var k = 0; k < data.deck_pack.length; k++){
-			new Deck(data.deck_pack[k]);
-		}
-	});
-	socket.on('update_decks', function(data){
-		deck_update(data);
-	});
-	socket.on('remove_decks',function(data){
-		deck_remove(data);
-	});
 
 	var createHeroPage = function(){
 		if(heroPickDiv.style.display == 'inline-block'){
@@ -223,10 +206,6 @@
 	var lastHeroName = null;
 	Player.list = {};
 	Hero.list = {};
-	Death.list = {};
-	Plague.list = {};
-	War.list = {};
-	Conquest.list = {};
 	
 	//Fonts
     ctx.font = '20px Arial';
@@ -272,34 +251,6 @@
 		hero_remove(data);
 	});
 
-	//Run Sockets
-	socket.on('init_run',function(data){	
-		for(var k = 0; k < data.death_deck.length; k++){
-			new Death(data.death_deck[k]);
-		}
-		for(var k = 0; k < data.plague_deck.length; k++){
-			new Plague(data.plague_deck[k]);
-		}
-		for(var k = 0; k < data.war_deck.length; k++){
-			new War(data.war_deck[k]);
-		}
-		for(var k = 0; k < data.conquest_deck.length; k++){
-			new Conquest(data.conquest_deck[k]);
-		}
-	});
-
-	socket.on('update_run',function(data){
-		death_update(data.death);
-		plague_update(data.plague);
-		war_update(data.war);
-		conquest_update(data.conquest);
-	});
-	socket.on('remove_run',function(data){
-		death_remove(data.death);
-		plague_remove(data.plague);
-		war_remove(data.war);
-		conquest_remove(data.conquest);
-	});
 	
 	//Interval
 	setInterval(function(){		

@@ -66,7 +66,6 @@ io.sockets.on('connection', function(socket){
 });
 
 setInterval(function(){
-	var pack_decks = Deck.getFrameUpdateDataDeck();
 	var pack_player = Player.getFrameUpdateData();
 	var pack_hero = Hero.getFrameUpdateData();
 	for(var i in SOCKET_LIST){
@@ -78,9 +77,5 @@ setInterval(function(){
 		socket.emit('init_hero',pack_hero.initPack_hero);
 		socket.emit('update_hero',pack_hero.updatePack_hero);
 		socket.emit('remove_hero',pack_hero.removePack_hero);
-
-		socket.emit('init_decks', pack_decks.initPack_deck);
-		socket.emit('update_decks', pack_decks.updatePack_deck);
-		socket.emit('remove_decks', pack_decks.removePack_deck);
 	}	
 }, 1000/25);

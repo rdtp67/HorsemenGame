@@ -113,10 +113,6 @@ Player.onConnect = function(socket, name){
 			hero_l:Hero.getAllInitPack(),
 		});
 
-		socket.emit('init_decks', {
-			deck_pack:Deck.getAllInitPackDeck(),
-		});
-
 }
 
 Player.getFrameUpdateData = function(){
