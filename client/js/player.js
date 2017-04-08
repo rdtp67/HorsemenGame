@@ -18,11 +18,9 @@ var player_update = function(data){
 			var pack = data.player[i];
 			var p = Player.list[pack.id];
 			if(p){
-				console.log("hero");
 				if(pack.health !== undefined && pack.health !== p.health)
 					p.health = pack.health;
 				if(pack.power_crystal !== undefined && pack.power_crystal !== p.power_crystal)
-					console.log("pc");
 					p.power_crystal = pack.power_crystal;
 				if(pack.hero !== undefined && pack.hero !== p.player_hero)
 					p.player_hero = pack.hero;

@@ -41,7 +41,6 @@
 <script src="/client/js/hero.js"></script>
 <script src="/client/js/socket.js"></script>
 <script src="/client/js/player_cards.js"></script>
-<script src="/client/js/player_hero.js"></script>
 <script src="/client/js/draw.js"></script>
 <script src="/client/js/draw_hero.js"></script>
 <script>
@@ -171,10 +170,8 @@
 	var selfId = null;
 	socket.on('init',function(data){
 		if(data.selfId && data.selfId != null){
-			console.log(data.selfId);
 			selfId = data.selfId;
 		}
-		console.log("hit");
 		for(var i = 0 ; i < data.player.length; i++){
 				new Player(data.player[i]);
 		}

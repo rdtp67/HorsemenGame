@@ -5,7 +5,6 @@ var server = require('http').Server(app);
 require('./server/player_s');
 require('./server/hero_s');
 require('./client/js/player_cards');
-require('./client/js/player_hero');
 require('./server/deck_s');
 
 app.get('/', function(req, res){
