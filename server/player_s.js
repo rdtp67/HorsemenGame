@@ -3,10 +3,12 @@ require('./hero_s.js');
 require('./run_s.js');
 require('./enums_s');
 require('./deck_s.js');
+require('./state_s.js');
 
 
 var initPack = {};
 var removePack = {player:[]};
+const GAMEPLAYERSIZE = 2;//This needs to be passed in, in the future
 
 Player = function(param){
 	var self = {
@@ -17,10 +19,10 @@ Player = function(param){
 	self.name = param.username;
 	self.id = param.id;
 	self.room_id = param.room_id;
+	self.state = new State();
 	self.player_cards = new Player_Cards(param.socket, true);
 	self.player_hero = null;
 	self.hero_type = card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
-	self.control = false;
 
 	self.getInitPack = function(){
 		return {
@@ -57,6 +59,10 @@ Player = function(param){
 	self.assignHeroCard = function(id){
 		self.player_hero = id;
 	}
+
+	self.updateStates = function(states_info){
+		self.state.updateStates(states_info);
+	}
 	
 	Player.list[self.id] = self;
 	initPack[self.room_id] = {player:[]};
@@ -72,20 +78,21 @@ Player.onConnect = function(socket, name, room){
 		id:socket.id, 
 		username:name,
 		socket:socket,
-		room_id:room});
-		player.name = name;
+		room_id:room,
+		name:name});
 
-		console.log(socket.id);
-
+		//Passes the player package to client that has just joined
 		socket.emit('init',{
 			selfId:socket.id,
 			player:Player.getAllInitPack(room),
 		});
 
+		//Passes all heros to player when first connecting
 		socket.emit('init_hero', {
 			hero_l:Hero.getAllInitPack(),
 		});
 
+		//Passes deck information to the player when first connecting
 		socket.emit('pushDecks', Deck.getDeckTypes());
 
 		socket.on('cardAction', function(id, type){
@@ -108,6 +115,8 @@ Player.onConnect = function(socket, name, room){
 
 		socket.on('addPlayerHeroCard', function(id){
 			player.assignHeroCard(id);
+			//Assigns game states once all players have joined
+			State.assignStatesInitial(Player.list, room, GAMEPLAYERSIZE); //GAMEPLAYERSIZE will need to be changed in the future
 		});
 
 }
@@ -166,6 +175,7 @@ Player.update = function(){
 	return pack;
 }
 
+/* Helper funcitons */
 var checkRoomExist = function(pack, room){
 	var isRoom = null;
 	Object.keys(pack).forEach(key => {
@@ -176,5 +186,6 @@ var checkRoomExist = function(pack, room){
 
 	return isRoom;
 }
+
 
 

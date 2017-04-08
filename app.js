@@ -55,9 +55,9 @@ io.sockets.on('connection', function(socket){
     });
 				
 	socket.on('disconnect', function(){
-		delete SOCKET_LIST[socket.id];
-		Player.onDisconnect(socket);
 		socket.leave("room-"+room_num);
+		Player.onDisconnect(socket);
+		delete SOCKET_LIST[socket.id];	
 		console.log('User Disconnected');
 	});
 
