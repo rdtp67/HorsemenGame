@@ -90,7 +90,7 @@ setInterval(function(){
 			csocket.broadcast.to("room-" + SOCKET_LIST[key].room_id).emit('init',pack_player.initPack.player[SOCKET_LIST[key].room_id]);
 		}
 		if(pack_player.updatePack.player[SOCKET_LIST[key].room_id] !== undefined){
-			io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('update',pack_player.updatePack.player[SOCKET_LIST[key].room_id]);
+			csocket.emit('update',pack_player.updatePack.player[SOCKET_LIST[key].room_id]);
 		}
 		io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('remove',pack_player.removePack);
 		

@@ -18,7 +18,7 @@ Player = function(param){
 	self.id = param.id;
 	self.room_id = param.room_id;
 	self.player_cards = new Player_Cards(param.socket, true);
-	self.player_hero = new Player_Hero(param.socket, true);
+	self.player_hero = null;//new Player_Hero(param.socket, true);
 	self.hero_type = card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
 	self.control = false;
 
@@ -30,30 +30,18 @@ Player = function(param){
 			power_crystal:self.power_crystal,	
 			name:self.name,		
 			h_type:self.hero_type,
+			hero:self.player_hero,
 		};
 	}
 	
 	self.getUpdatePack = function(){
-		let stat = self.player_hero.getStats();
-		if(stat !== undefined){
 			return {
-			id:self.id,
-			room_id:self.room_id,
-			health:self.health,
-			power_crystal:self.power_crystal,
-			hero_name:stat.name,
-			hero_attack:stat.attack,
-			hero_defense:stat.defense,
-			hero_dodge:stat.dodge,
-			};
-		}
-		else{
-			return{
 				id:self.id,
+				room_id:self.room_id,
 				health:self.health,
 				power_crystal:self.power_crystal,
+				hero:self.player_hero,
 			};
-		}
 	}
 
 	self.addCardtoInvent = function(type){
@@ -67,7 +55,8 @@ Player = function(param){
 	}
 
 	self.assignHeroCard = function(id){
-		self.player_hero.addCard(id);
+		self.player_hero = id;
+		//console.log(self.player_hero);
 	}
 	
 	Player.list[self.id] = self;
@@ -106,6 +95,7 @@ Player.onConnect = function(socket, name, room){
 				console.log("Cheater! Player ID: " + player.id);
 			}
 			else{
+				console.log("card " + id + " " + type + " " + player.power_crystal);
 				Deck.getDeckCardAction(id, type, player);
 			}
 		});
@@ -167,11 +157,13 @@ Player.update = function(){
 		let room = Player.list[i].room_id;
 		let player = Player.list[i];
 		let key = checkRoomExist(pack, room);
-		if(key === null){
+		if(key == null){
+			console.log("null");
 			pack[room] = {player:[]};
 			pack[room].player.push(player.getUpdatePack());
 		}
 		else{
+			console.log("key" + key);
 			pack[key].player.push(player.getUpdatePack());
 		}
 	}
@@ -182,7 +174,7 @@ var checkRoomExist = function(pack, room){
 	var isRoom = null;
 	Object.keys(pack).forEach(key => {
 		if(key == room){
-			return key;
+			isRoom = key;
 		}
 	});
 

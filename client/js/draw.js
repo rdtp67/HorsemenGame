@@ -53,3 +53,62 @@ var drawCardsEnemy = function(){
 			ctx_ui_cards_enemy.stroke();
 
 	}
+
+	var drawPlayerHero = function(){
+		if(!selfId)
+				return;
+		if(lastHealth === Player.list[selfId].health && lastPowerCrystal === Player.list[selfId].power_crystal && lastHeroName === Player.list[selfId].hero_name)
+			return;
+		else
+			ctx_ui_player_hero.clearRect(0,0,1500,800);
+			ctx_ui_player_hero.beginPath();
+			ctx_ui_player_hero.lineWidth="4";
+			ctx_ui_player_hero.strokeStyle="yellow";
+			ctx_ui_player_hero.rect(750,400,550,200);
+			ctx_ui_player_hero.stroke();
+			lastHealth = Player.list[selfId].health;
+			lastPowerCrystal = Player.list[selfId].power_crystal;
+			ctx_ui_player_hero.fillStyle = 'white';
+			ctx_ui_player_hero.fillText("Health: " + Player.list[selfId].health,1025,430);
+			ctx_ui_player_hero.fillText("Power Crystals: " + Player.list[selfId].power_crystal,755,430);
+			let hero_id = Player.list[selfId].player_hero;
+			if(hero_id !== undefined && hero_id !== null){
+				let hero = Hero.list[hero_id];
+            	ctx_ui_player_hero.fillText("Hero Name: " + hero.title,755,460);
+            	ctx_ui_player_hero.fillText("Hero Attack: " + hero.attack,755,490);
+            	ctx_ui_player_hero.fillText("Hero Defense: " + hero.defense,755,520);
+            	ctx_ui_player_hero.fillText("Hero Dodge: " + hero.dodge,755,550);
+			}
+
+	}
+
+	var drawEnemyHero = function(){
+		if(!selfId)
+				return;
+		else
+			ctx_ui_enemy_hero.clearRect(0,0,1500,800);
+			ctx_ui_enemy_hero.beginPath();
+			ctx_ui_enemy_hero.lineWidth="4";
+			ctx_ui_enemy_hero.strokeStyle="purple";
+			ctx_ui_enemy_hero.rect(200,200,550,200);
+			ctx_ui_enemy_hero.stroke();
+            ctx_ui_enemy_hero.fillStyle = 'white';
+            for(var i in Player.list)
+            {
+                if(Player.list[i].id !== selfId){
+                    ctx_ui_enemy_hero.fillText("Health: " + Player.list[i].health,475,230);
+                    ctx_ui_enemy_hero.fillText("Power Crystals: " + Player.list[i].power_crystal,205,230);
+					
+					let hero_id = Player.list[i].player_hero;
+					if(hero_id !== undefined && hero_id !== null){
+						let hero = Hero.list[hero_id];
+                    	ctx_ui_enemy_hero.fillText("Enemy Name: " + hero.title,205,260);
+                    	ctx_ui_enemy_hero.fillText("Enemy Attack: " + hero.attack,205,290);
+                    	ctx_ui_enemy_hero.fillText("Enemy Defense: " + hero.defense,205,320);
+                    	ctx_ui_enemy_hero.fillText("Enemy Dodge: " + hero.dodge,205,350);
+					}
+                    return;
+                }
+                    
+            }
+	}

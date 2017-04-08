@@ -135,11 +135,6 @@
 		playerCards.refreshRender();
 	});
 
-	var playerHero = new Player_Hero(socket,false);
-	socket.on('updateHeroCards', function(id){
-		playerHero.id = id;
-		playerHero.refreshRender();
-	})
 	
 	/******* Game *******/
 	
@@ -199,16 +194,7 @@
 			new Hero(data.hero_l[j]);
 		}
 	});
-	
-	socket.on('update_hero',function(data){
-		hero_update(data);
-
-	});
-	socket.on('remove_hero',function(data){
-		hero_remove(data);
-	});
-
-	
+		
 	//Interval
 	setInterval(function(){		
 		if(!selfId) 

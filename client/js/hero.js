@@ -10,24 +10,3 @@ var Hero = function(initPack){
 		Hero.list[self.id] = self;
 		return self;
 }
-
-var hero_update = function(data){
-    for(var i in data.hero_l){
-			var pack = data.hero_l[i];
-			var p = Hero.list[pack.card.id];
-			if(p){
-				if(pack.attack !== undefined)
-					p.attack = pack.attack;
-                 if(pack.defense !== undefined)
-					p.defense = pack.defense;
-				if(pack.dodge !== undefined)
-					p.dodge = pack.dodge;
-			}
-		}
-}
-
-var hero_remove = function(data){
-    for(var i = 0 ; i < data.hero_l.length; i++){
-			delete Hero.list[data.hero_l[i]];
-		}
-}

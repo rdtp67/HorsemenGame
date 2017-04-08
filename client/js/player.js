@@ -7,18 +7,8 @@
 		self.health = initPack.health;
 		self.power_crystal = initPack.power_crystal;
 		self.hero_type = initPack.h_type;
-		self.hero_name = initPack.hero_name;
-		self.hero_attack = initPack.hero_attack;
-		self.hero_defense = initPack.hero_defense;
-		self.hero_dodge = initPack.hero_dodge;
-		
-		//Can be trashed
-		self.draw = function(w, h){
-			ctx.fillStyle = 'white';
-			ctx.fillText("Name: " + self.name + "Hero Type" + self.hero_type + " Health: " + self.health + " Power Crystals: " 
-			+ self.power_crystal + " ID: " + self.id, w, h);
-		}
-				
+		self.player_hero = initPack.hero;
+					
 		Player.list[self.id] = self;
 		return self;
 	}
@@ -28,18 +18,14 @@ var player_update = function(data){
 			var pack = data.player[i];
 			var p = Player.list[pack.id];
 			if(p){
-				if(pack.health !== undefined)
+				console.log("hero");
+				if(pack.health !== undefined && pack.health !== p.health)
 					p.health = pack.health;
-				if(pack.power_crystal !== undefined)
+				if(pack.power_crystal !== undefined && pack.power_crystal !== p.power_crystal)
+					console.log("pc");
 					p.power_crystal = pack.power_crystal;
-				if(pack.hero_name !== undefined)
-					p.hero_name = pack.hero_name;
-				if(pack.hero_attack !== undefined)
-					p.hero_attack = pack.hero_attack;
-				if(pack.hero_defense !== undefined)
-					p.hero_defense = pack.hero_defense;
-				if(pack.hero_dodge !== undefined)
-					p.hero_dodge = pack.hero_defense;
+				if(pack.hero !== undefined && pack.hero !== p.player_hero)
+					p.player_hero = pack.hero;
 			}
 		}
 }
