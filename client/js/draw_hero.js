@@ -73,6 +73,8 @@ var drawPlayerHero = function(){
             	let buttonh = document.createElement('button');
             	buttonh.onclick = function(){
                 	socket.emit('addPlayerHeroCard',data.id);
+					heroPickDiv.style.display = 'none';
+    				gameDiv.style.display = 'inline-block';
             	}
            		buttonh.innerText = data.title;
             	invent.appendChild(buttonh);

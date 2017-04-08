@@ -25,26 +25,26 @@ img.card{
     height: 160;
 }
 
-#death_deck{
+#deck0{
     position: absolute;
     left: 1320;
     top:620;
 }
 
-#plague_deck{
+#deck1{
     position: absolute;
     left: 20;
     top:620;
 }
 
-#war_deck{
+#deck2{
     position: absolute;
     left: 20;
     top: 20;
 }
 
 
-#conquest_deck{
+#deck3{
     position: absolute;
     left: 1320;
     top: 20;

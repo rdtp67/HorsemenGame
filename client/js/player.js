@@ -2,6 +2,7 @@
 	var Player = function(initPack){
 		var self = {};
 		self.id = initPack.id;
+		self.room_id = initPack.room_id;
 		self.name = initPack.name;
 		self.health = initPack.health;
 		self.power_crystal = initPack.power_crystal;
@@ -11,6 +12,7 @@
 		self.hero_defense = initPack.hero_defense;
 		self.hero_dodge = initPack.hero_dodge;
 		
+		//Can be trashed
 		self.draw = function(w, h){
 			ctx.fillStyle = 'white';
 			ctx.fillText("Name: " + self.name + "Hero Type" + self.hero_type + " Health: " + self.health + " Power Crystals: " 

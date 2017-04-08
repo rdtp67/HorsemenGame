@@ -10,11 +10,6 @@
 
 <div id="heroPickDiv" style="display:none;">
 	<canvas id="ctx-hero" width="1500" height="800" class="hero_c"></canvas>
-
-	<div id="tempSwtich_d" class="tempSwitch_c">
-		<button id="tempSwitch_b">Temp Switch Page</button>
-	</div>
-
 	<div id="hero_cards"></div>
 </div>
 
@@ -38,33 +33,11 @@
 	</form>
 
 	<div id="user_cards"></div>
-	<div id="user_hero"></div>
-	<div id="death_deck">
-		<button id="death_deck_btn" style="position:absolute;" onclick="deathClick()">
-			<img src="/client/img/death_card_temp.jpg" id="death_deck_pic" class="card">
-		</button>
-	</div>
-	<div id="plague_deck">
-		<button id="plague_deck_btn" style="position:absolute;" onclick="plagueClick()">
-			<img src="/client/img/plague_card_temp.jpg" id="plague_deck_pic" class="card">
-		</button>
-	</div>
-	<div id="war_deck">
-		<button id="war_deck_btn" style="position:absolute;" onclick="warClick()">
-			<img src="/client/img/war_card_temp.jpg" id="war_deck_pic" class="card">
-		</button>
-	</div>
-	<div id="conquest_deck">
-		<button id="conquest_deck_btn" style="position:absolute;" onclick="conquestClick()">
-			<img src="/client/img/conquest_card_temp.jpg" id="conquest_deck_pic" class="card">
-		</button>
-	</div>
-	
+	<div id="user_hero"></div>	
 </div>
 
 <script src="/client/js/player.js"></script>
 \<script src="/client/js/deck.js"></script>
-<script src="/client/js/card.js"></script>
 <script src="/client/js/hero.js"></script>
 <script src="/client/js/socket.js"></script>
 <script src="/client/js/player_cards.js"></script>
@@ -74,6 +47,11 @@
 <script>
 
 	var socket = io();
+	var room_id;
+
+	socket.on('connectToRoom',function(data){
+          
+      });
 	
 	
 	/******* Sign In *******/
@@ -91,6 +69,7 @@
     }
     socket.on('signInResponse',function(data){
         if(data.success){
+			room_id = data.room_id;
             signDiv.style.display = 'none';
 			heroPickDiv.style.display = 'inline-block';
 			createHeroPage();
@@ -122,13 +101,8 @@
 			ctx_hero.clearRect(0,0,1500,800);
 			drawBackgroundHero();
 			drawHeroSelect();
-			drawPlayerHeroCards();//This is getting over-written to quickly	
+			drawPlayerHeroCards();
 		}
-	}
-
-	tempSwitchBtn.onclick = function(){
-		heroPickDiv.style.display = 'none';
-    	gameDiv.style.display = 'inline-block';
 	}
 
 	/******* Chat *******/
@@ -148,7 +122,7 @@
 		if(chatInput.value[0] === '/')
 			socket.emit('evalServer', chatInput.value.slice(1));
 		else
-			socket.emit('sendMsgToServer', chatInput.value);
+			socket.emit('sendMsgToServer', {value:chatInput.value, room_id:room_id});
 		chatInput.value = '';
 		
 	}
@@ -166,32 +140,11 @@
 		playerHero.id = id;
 		playerHero.refreshRender();
 	})
-
-	/****** Decks *******/
-	//These all need to be converted to recieving rand init_decks
-	var deathClick = function(){
-		socket.emit('addRunCard', 'Death');
-		return;
-	}
-	
-	var plagueClick = function(){
-		socket.emit('addRunCard', 'Plague');
-		return;
-	}
-
-	var warClick = function(){
-		socket.emit('addRunCard', 'War');
-		return;
-	}
-
-	var conquestClick = function(){
-		socket.emit('addRunCard', 'Conquest');
-		return;
-	}
 	
 	/******* Game *******/
 	
 	//Vars
+	var game_div = document.getElementById("gameDiv");
 	var ctx = document.getElementById("ctx").getContext("2d");
 	var ctx_ui = document.getElementById("ctx-ui").getContext("2d");
 	var ctx_ui_player_hero = document.getElementById("ctx-ui-player-hero").getContext("2d");
@@ -204,6 +157,7 @@
 	var lastHealth = null;
 	var lastPowerCrystal = null;
 	var lastHeroName = null;
+	const DECK_LIMIT = 4;
 	Player.list = {};
 	Hero.list = {};
 	
@@ -220,11 +174,13 @@
 		
 	//Player Sockets
 	var selfId = null;
-	socket.on('init',function(data){	
-		if(data.selfId)
+	socket.on('init',function(data){
+		var room = null;
+		if(data.selfId){
 			selfId = data.selfId;
+		}
 		for(var i = 0 ; i < data.player.length; i++){
-			new Player(data.player[i]);
+				new Player(data.player[i]);
 		}
 	});
 	
@@ -266,16 +222,64 @@
 			drawCardsRight();
 			drawCardsPlayer();
 			drawCardsEnemy();
-			var height = 100;
-			var width = 500;
-			for(var i in Player.list){
-				Player.list[i].draw(width, height);
-				height +=100;
-			}
 		}
 
 	},40);
-	
+
+/****** Decks *******/
+//Decks
+var d1_btn = document.getElementById("deck1_btn");
+var d2_btn = document.getElementById("deck2_btn");
+var d3_btn = document.getElementById("deck3_btn");
+var d4_btn = document.getElementById("deck4_btn");
+var deck_btn_list = [d1_btn, d2_btn, d3_btn, d4_btn];
+var decktemp = [];
+socket.on('pushDecks', function(data){
+	createDecks(data);
+});
+
+var runClick = function(type){
+	socket.emit('addRunCard', type);
+	return;
+}
+
+var createDecks = function(deck_types){
+	for(var i in deck_types){
+		decktemp.push(deck_types[i]);
+		if(i >= DECK_LIMIT){
+			return;
+		}
+		createButton(i, deck_types);
+		
+	}
+}
+
+var createButton = function(i, deck_types){
+	let div = document.createElement('div');
+	let button = document.createElement('button');
+	div.setAttribute("id", "deck"+i);
+	button.setAttribute("id", "deck"+i+"_btn");
+	button.onclick = function(){runClick(deck_types[i])};
+	button.innerHTML = getDeckImages(deck_types[i]);
+	game_div.appendChild(div);
+	div.appendChild(button);
+}
+
+//Need a better way to get the images prob
+var getDeckImages = function(type){
+	switch(type){
+		case "Death":
+			return '<img src="/client/img/death_card_temp.jpg" id="war_deck_pic" class="card">';
+		case "Plague":
+			return '<img src="/client/img/plague_card_temp.jpg" id="war_deck_pic" class="card">';
+		case "War":
+			return '<img src="/client/img/war_card_temp.jpg" id="war_deck_pic" class="card">';
+		case "Conquest":
+			return '<img src="/client/img/conquest_card_temp.jpg" id="war_deck_pic" class="card">';
+		default:
+			return "";
+	}
+}
 
        	
 </script>

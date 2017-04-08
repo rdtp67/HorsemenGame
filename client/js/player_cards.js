@@ -45,7 +45,7 @@ Player_Cards = function(socket, server){
             //let item = getRunCardItem(data, i);
             let button = document.createElement('button');
             button.onclick = function(){
-                getCardFunc(dat.id, data.type);
+                getCardFunc(data.id, data.type);
             }
             button.innerText = data.name;
             invent.appendChild(button);

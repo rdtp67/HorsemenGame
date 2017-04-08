@@ -16,13 +16,16 @@ Player = function(param){
 	
 	self.name = param.username;
 	self.id = param.id;
+	self.room_id = param.room_id;
 	self.player_cards = new Player_Cards(param.socket, true);
 	self.player_hero = new Player_Hero(param.socket, true);
 	self.hero_type = card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
+	self.control = false;
 
 	self.getInitPack = function(){
 		return {
 			id:self.id,
+			room_id:self.room_id,
 			health:self.health,
 			power_crystal:self.power_crystal,	
 			name:self.name,		
@@ -35,6 +38,7 @@ Player = function(param){
 		if(stat !== undefined){
 			return {
 			id:self.id,
+			room_id:self.room_id,
 			health:self.health,
 			power_crystal:self.power_crystal,
 			hero_name:stat.name,
@@ -53,7 +57,7 @@ Player = function(param){
 	}
 
 	self.addCardtoInvent = function(type){
-		self.player_cards.addCard(Deck.list[3]);
+		self.player_cards.addCard(Deck.getTopRunCard(type));
 		return;
 	}
 
@@ -66,8 +70,7 @@ Player = function(param){
 		self.player_hero.addCard(id);
 	}
 	
-	Player.list[self.id] = self;
-	
+	Player.list[self.id] = self;	
 	initPack.player.push(self.getInitPack());
 	
 	return self;
@@ -75,12 +78,24 @@ Player = function(param){
 
 Player.list = {};
 
-Player.onConnect = function(socket, name){
+Player.onConnect = function(socket, name, room){
 		var player = Player({
 		id:socket.id, 
 		username:name,
-		socket:socket});
+		socket:socket,
+		room_id:room});
 		player.name = name;
+
+		socket.emit('init',{
+			selfId:socket.id,
+			player:Player.getAllInitPack(room),
+		});
+
+		socket.emit('init_hero', {
+			hero_l:Hero.getAllInitPack(),
+		});
+
+		socket.emit('pushDecks', Deck.getDeckTypes());
 
 		socket.on('cardAction', function(id, type){
 			if(!player.player_cards.hasItem(id))
@@ -88,7 +103,7 @@ Player.onConnect = function(socket, name){
 				console.log("Cheater! Player ID: " + player.id);
 			}
 			else{
-				getRunCardAction(id, type, player);
+				Deck.getDeckCardAction(id, type, player);
 			}
 		});
 		
@@ -103,19 +118,10 @@ Player.onConnect = function(socket, name){
 		socket.on('addPlayerHeroCard', function(id){
 			player.assignHeroCard(id);
 		});
-		
-		socket.emit('init',{
-			selfId:socket.id,
-			player:Player.getAllInitPack(),
-		});
-
-		socket.emit('init_hero', {
-			hero_l:Hero.getAllInitPack(),
-		});
 
 }
 
-Player.getFrameUpdateData = function(){
+Player.getFrameUpdateData = function(data){
 
 	var pack = {
 		initPack:{
@@ -125,7 +131,7 @@ Player.getFrameUpdateData = function(){
 			player:removePack.player,
 		},
 		updatePack:{
-			player:Player.update(),
+			player:Player.update(data),
 		}
 	};
 	
@@ -138,7 +144,8 @@ Player.getFrameUpdateData = function(){
 Player.getAllInitPack = function(){
 	var players = [];
 	for(var i in Player.list){
-		players.push(Player.list[i].getInitPack());
+		//if(data == Player.list[i].room_id)
+			players.push(Player.list[i].getInitPack());
 	}
 	return players;
 }
@@ -152,7 +159,8 @@ Player.update = function(){
 	var pack = [];
 	for(var i in Player.list){
 		var player = Player.list[i];
-		pack.push(player.getUpdatePack());
+		//if(data == Player.list[i].room_id)
+			pack.push(player.getUpdatePack());
 	}
 	return pack;
 }
