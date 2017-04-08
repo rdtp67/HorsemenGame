@@ -1,7 +1,6 @@
 require('./card_s.js');
 
 var initPack_hero = {hero_l:[]};
-var removePack_hero = {hero_l:[]};
 
 Hero = function(hid, htype, htitle, hatk, hdef, hdodge){
 	var self = Card(hid, htype, htitle);
@@ -17,16 +16,7 @@ Hero = function(hid, htype, htitle, hatk, hdef, hdodge){
 			dodge:self.dodge,
 		};
 	}
-	
-	self.getUpdatePack = function(){
-		return {
-			card:self.getUpdatePackCard(),
-			attack:self.attack,
-			defense:self.defense,
-			dodge:self.dodge,
-		};
-	}
-	
+		
 	Hero.list[hid] = self;
 	initPack_hero.hero_l.push(self.getInitPack());
 	hero_count++;
@@ -36,35 +26,6 @@ Hero = function(hid, htype, htitle, hatk, hdef, hdodge){
 
 Hero.list = {};
 var hero_count = 0;
-
-Hero.getFrameUpdateData = function(){
-
-	var pack = {
-		initPack_hero:{
-			hero_l:initPack_hero.hero_l,
-		},
-		removePack_hero:{
-			hero_l:removePack_hero.hero_l,
-		},
-		updatePack_hero:{
-			hero_l:Hero.update(),
-		}
-	};
-	
-	initPack_hero.hero_l = [];
-	removePack_hero.hero_l = [];
-	
-	return pack;
-}
-
-Hero.update = function(){
-	var pack = [];
-	for(var i in Hero.list){
-		var hero = Hero.list[i];
-		pack.push(hero.getUpdatePack());
-	}
-	return pack;
-}
 
 Hero.getAllInitPack = function(){
 	var hero = [];

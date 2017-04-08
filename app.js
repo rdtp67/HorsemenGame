@@ -82,7 +82,6 @@ var si = 0;
 setInterval(function(){	
 	
 		var pack_player = Player.getFrameUpdateData();
-		var pack_hero = Hero.getFrameUpdateData();		//Is hero needed?
 		Object.keys(SOCKET_LIST).forEach(key =>{
 
 		var csocket = SOCKET_LIST[key].socket;
