@@ -5,7 +5,7 @@ require('./enums_s');
 require('./deck_s.js');
 
 
-var initPack = {player:[]};
+var initPack = {};
 var removePack = {player:[]};
 
 Player = function(param){
@@ -70,8 +70,9 @@ Player = function(param){
 		self.player_hero.addCard(id);
 	}
 	
-	Player.list[self.id] = self;	
-	initPack.player.push(self.getInitPack());
+	Player.list[self.id] = self;
+	initPack[self.room_id] = {player:[]};
+	initPack[self.room_id].player.push(self.getInitPack());
 	
 	return self;
 }
@@ -85,6 +86,8 @@ Player.onConnect = function(socket, name, room){
 		socket:socket,
 		room_id:room});
 		player.name = name;
+
+		console.log(socket.id);
 
 		socket.emit('init',{
 			selfId:socket.id,
@@ -121,31 +124,34 @@ Player.onConnect = function(socket, name, room){
 
 }
 
-Player.getFrameUpdateData = function(data){
+Player.getFrameUpdateData = function(){
 
 	var pack = {
 		initPack:{
-			player:initPack.player,
+			player:initPack,
 		},
 		removePack:{
 			player:removePack.player,
 		},
 		updatePack:{
-			player:Player.update(data),
+			player:Player.update(),
 		}
 	};
 	
-	initPack.player = [];
+	initPack = {};
 	removePack.player = [];
 
 	return pack;
 }
 
-Player.getAllInitPack = function(){
+//Creates init pack to send to player on connect, only players in room
+Player.getAllInitPack = function(data){
 	var players = [];
+	let  p = null;
 	for(var i in Player.list){
-		//if(data == Player.list[i].room_id)
-			players.push(Player.list[i].getInitPack());
+		p = Player.list[i].getInitPack();
+		if(data == p.room_id)
+			players.push(p);
 	}
 	return players;
 }
@@ -156,13 +162,31 @@ Player.onDisconnect = function(socket){
 }
 
 Player.update = function(){
-	var pack = [];
+	var pack = {};
 	for(var i in Player.list){
-		var player = Player.list[i];
-		//if(data == Player.list[i].room_id)
-			pack.push(player.getUpdatePack());
+		let room = Player.list[i].room_id;
+		let player = Player.list[i];
+		let key = checkRoomExist(pack, room);
+		if(key === null){
+			pack[room] = {player:[]};
+			pack[room].player.push(player.getUpdatePack());
+		}
+		else{
+			pack[key].player.push(player.getUpdatePack());
+		}
 	}
 	return pack;
+}
+
+var checkRoomExist = function(pack, room){
+	var isRoom = null;
+	Object.keys(pack).forEach(key => {
+		if(key == room){
+			return key;
+		}
+	});
+
+	return isRoom;
 }
 
 

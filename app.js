@@ -80,69 +80,21 @@ io.sockets.on('connection', function(socket){
 
 var si = 0;
 setInterval(function(){	
-	/*var types = [];
-	var iterate_types = [];
-
-	Object.keys(SOCKET_LIST).forEach(key =>{
-		types.push(SOCKET_LIST[key].room_id);
-	});	
-
-	iterate_types = [... new Set(types)];
-	for(var value in iterate_types){
-		var pack_player = Player.getFrameUpdateData(value);
-		var pack_hero = Hero.getFrameUpdateData();		//Is hero needed?
-
-		io.sockets.in("room-" + value).emit('init',pack_player.initPack);
-		io.sockets.in("room-" + value).emit('update',pack_player.updatePack);
-		io.sockets.in("room-" + value).emit('remove',pack_player.removePack);
-		
-		io.sockets.in("room-" + value).emit('init_hero',pack_hero.initPack_hero);
-		io.sockets.in("room-" + value).emit('update_hero',pack_hero.updatePack_hero);
-		io.sockets.in("room-" + value).emit('remove_hero',pack_hero.removePack_hero);
-	}*/
-
+	
 		var pack_player = Player.getFrameUpdateData();
 		var pack_hero = Hero.getFrameUpdateData();		//Is hero needed?
 		Object.keys(SOCKET_LIST).forEach(key =>{
 
 		var csocket = SOCKET_LIST[key].socket;
 
-		for(var i = 0; i < pack_player.initPack.player.length; i++){
-			if(pack_player.initPack.player[i].room_id == SOCKET_LIST[key].room_id)
-				io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('init',pack_player.initPack.player[i]);
+		if(pack_player.initPack.player[SOCKET_LIST[key].room_id] !== undefined){
+			csocket.broadcast.to("room-" + SOCKET_LIST[key].room_id).emit('init',pack_player.initPack.player[SOCKET_LIST[key].room_id]);
 		}
-		io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('update',pack_player.updatePack);
+		if(pack_player.updatePack.player[SOCKET_LIST[key].room_id] !== undefined){
+			io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('update',pack_player.updatePack.player[SOCKET_LIST[key].room_id]);
+		}
 		io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('remove',pack_player.removePack);
-
-		if(pack_player.initPack.player.length > 0)
-		console.log(pack_player.initPack);
 		
-		io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('init_hero',pack_hero.initPack_hero);
-		io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('update_hero',pack_hero.updatePack_hero);
-		io.sockets.in("room-" + SOCKET_LIST[key].room_id).emit('remove_hero',pack_hero.removePack_hero);
-
 	});
-	
-
-	/*var pack_player = Player.getFrameUpdateData();
-	var pack_hero = Hero.getFrameUpdateData();
-	for(var i in SOCKET_LIST){
-		var socket = SOCKET_LIST[i].socket;
-		socket.emit('init',pack_player.initPack);
-		socket.emit('update',pack_player.updatePack);
-		socket.emit('remove',pack_player.removePack);
-
-
-		if(pack_player.initPack.player.length > 0){
-			console.log(pack_player.initPack);
-			console.log(si);
-			si++;
-		}
-		
-		socket.emit('init_hero',pack_hero.initPack_hero);
-		socket.emit('update_hero',pack_hero.updatePack_hero);
-		socket.emit('remove_hero',pack_hero.removePack_hero);
-	}*/
-
 	
 }, 1000/25);

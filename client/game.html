@@ -175,10 +175,11 @@
 	//Player Sockets
 	var selfId = null;
 	socket.on('init',function(data){
-		var room = null;
-		if(data.selfId){
+		if(data.selfId && data.selfId != null){
+			console.log(data.selfId);
 			selfId = data.selfId;
 		}
+		console.log("hit");
 		for(var i = 0 ; i < data.player.length; i++){
 				new Player(data.player[i]);
 		}

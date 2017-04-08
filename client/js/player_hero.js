@@ -7,8 +7,10 @@ Player_Hero = function(socket, server){
     }
 
     self.addCard = function(id){
-        self.id = id;
-        self.refreshRender();
+        if(self.socket){
+            self.id = id;
+            self.refreshRender();
+        }
         return;
     }
 
@@ -56,24 +58,3 @@ Player_Hero = function(socket, server){
 }
 
 
-Item_Hero = function(id,name, attack, defense, dodge, event){
-    var self = {
-        id:id,
-        name:name,
-        attack:attack,
-        defense:defense,
-        dodge:dodge,
-        event:event,
-    }
-
-    Item_Hero.List[self.id] = self;
-
-    return self;
-}
-
-Item_Hero.List = {};
-
-Item_Hero("h1", "Hero1", "5", "0", "1", function(){
-    Player.list[selfId].health++;
-	socket.emit('healthModifier', 1);
-});

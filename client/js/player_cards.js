@@ -10,8 +10,8 @@ Player_Cards = function(socket, server){
         if(self.socket){
             self.items.push({id:data.id,type:data.type,name:data.name});
             self.refreshRender();
-            return;
         }
+        return;
     }
     self.removeCard = function(id){
         for(var i = 0; i<self.items.length; i++){
