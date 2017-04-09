@@ -5,6 +5,7 @@ var server = require('http').Server(app);
 require('./server/player_s');
 require('./server/hero_s');
 require('./client/js/player_cards');
+require('./server/state_s.js');
 require('./server/deck_s');
 
 app.get('/', function(req, res){
@@ -24,23 +25,36 @@ console.log("Server Started");
 var SOCKET_LIST = {};
 var room_num = 1;
 
-//Debug = false when live
+//Debug = false when live, curently allows for logging to console from front end
 var DEBUG = true;
 
 var io = require('socket.io')(server,{});
 io.sockets.on('connection', function(socket){
 
-	if(io.nsps['/'].adapter.rooms["room-"+room_num] && io.nsps['/'].adapter.rooms["room-"+room_num].length > 1)
-    	room_num++;
+	//Vars
+	var cur_room = null; 	//Holds the room for the socket
+	var size = 0; 			//Used to log the number of players connected when a player signs in
+
+	//This will need to be changed out for something inteligent that looks through all rooms with players
+	if(io.nsps['/'].adapter.rooms["room-"+room_num] && io.nsps['/'].adapter.rooms["room-"+room_num].length > 1){
+		room_num++;
+	}
+
   	socket.join("room-"+room_num);
 	console.log("Room: " + room_num);
-	var cur_room = room_num;
+	cur_room = room_num;
 
-	io.sockets.in("room-"+room_num).emit('connectToRoom', "You are in room no. "+room_num);
-	var size = 0;
+	//Socket: emits message to client only, sends room number
+	socket.emit('connectToRoom', "You are in room no. "+room_num);
+
+	//Assigns socket a random value and room number
+	// ~~ Random value will have to change to remove chance of overlaping socketing ids ~~
 	socket.id = Math.random();
 	SOCKET_LIST[socket.id] = {socket:socket, room_id:cur_room};
 
+	//Desc: Socket listens for player to finish the sign in process, then creates a new player
+	//Pre: client username
+	//Note: will need to create a log in process here, check out the DG project since you've already done salt/hashing there
 	 socket.on('signIn',function(data){
 		 if(Player.list)
                 Player.onConnect(socket, data.username, cur_room);
@@ -50,10 +64,15 @@ io.sockets.on('connection', function(socket){
 		 });
 		 console.log("Players: " + size);
     });
+
+	//Desc: Socket listens for client signing up
+	//Pre: client username
+	//Note: All logic still to be created
     socket.on('signUp',function(data){
                 socket.emit('signUpResponse',{success:false});      
     });
-				
+
+	//Desc: Socket listens for client to disconect, does all clean up associated (leave room, remove from player list, remove socket)			
 	socket.on('disconnect', function(){
 		socket.leave("room-"+room_num);
 		Player.onDisconnect(socket);
@@ -61,12 +80,17 @@ io.sockets.on('connection', function(socket){
 		console.log('User Disconnected');
 	});
 
+	//Desc: Socket listens for client to submit a message, message is sent out to all non client users in room
+	//Pre: String message & room number
+	//Post: broadcasts messsage to room
 	socket.on('sendMsgToServer',function(data){
         var playerName = Player.list[socket.id].name;
 		var socket_c = SOCKET_LIST[socket.id].socket;
 		socket_c.broadcast.to("room-" + data.room_id).emit('addToChat',playerName + ': ' + data.value);
     });
 	
+	//Desc: Socket listens to debug values in client chat, allows for console logging
+	//Pre: messgage
 	socket.on('evalServer', function(data){
 		if(!DEBUG)
 			return;
@@ -77,7 +101,8 @@ io.sockets.on('connection', function(socket){
 	
 });
 
-var si = 0;
+//Desc: Interval for the server, sends packets to client/s
+//Speed: 40 p/s
 setInterval(function(){	
 	
 		var pack_player = Player.getFrameUpdateData();

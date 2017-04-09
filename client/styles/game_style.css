@@ -1,3 +1,4 @@
+
 canvas{
     position:absolute;
     left:8px;
@@ -10,6 +11,10 @@ img.card{
     width: 160px;
 }
 
+button.activity_btn{
+    float:right;
+    margin:5px;
+}
 
 #u_hero{
     position: absolute;
@@ -48,6 +53,14 @@ img.card{
     position: absolute;
     left: 1320;
     top: 20;
+}
+
+#player_actions{
+    position:absolute;
+    clear:both;
+    left: 1320;
+    top: 470;
+    text-align: center;
 }
 
 

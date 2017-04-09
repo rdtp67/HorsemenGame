@@ -8,6 +8,8 @@
 		self.power_crystal = initPack.power_crystal;
 		self.hero_type = initPack.h_type;
 		self.player_hero = initPack.hero;
+		self.state = new State(initPack.state);
+		self.action = initPack.action;
 					
 		Player.list[self.id] = self;
 		return self;
@@ -24,6 +26,11 @@ var player_update = function(data){
 					p.power_crystal = pack.power_crystal;
 				if(pack.hero !== undefined && pack.hero !== p.player_hero)
 					p.player_hero = pack.hero;
+				if(pack.state !== undefined && pack.state !== p.state)
+					p.state.updateState(pack.state);
+				if(pack.action !== undefined && pack.action !== p.action){
+					p.action = pack.action;
+				}
 			}
 		}
 }

@@ -6,6 +6,7 @@
     Password: <input id="signDiv-password" type="password"></input>
     <button id="signDiv-signIn">Sign In</button>
     <button id="signDiv-signUp">Sign Up</button>
+	<div id="roomOutput"></div>
 </div>
 
 <div id="heroPickDiv" style="display:none;">
@@ -19,6 +20,7 @@
 	<canvas id="ctx-ui-player-hero" width="1500" height="800"></canvas>
 	<canvas id="ctx-ui-enemy-hero" width="1500" height="800" ></canvas>
 	<canvas id="ctx-ui-player-keep" width="1500" height="800" ></canvas>
+	<canvas id="ctx-ui-enemy-keep" width="1500" height="800" ></canvas>
 	<canvas id="ctx-ui-cards-left" width="1500" height="800" ></canvas>
 	<canvas id="ctx-ui-cards-right" width="1500" height="800" ></canvas>
 	<canvas id="ctx-ui-cards-player" width="1500" height="800" ></canvas>
@@ -33,11 +35,16 @@
 	</form>
 
 	<div id="user_cards"></div>
-	<div id="user_hero"></div>	
+	<div id="user_hero"></div>
+	<div id="player_actions">
+		<button id="attack_btn" class="activity_btn">Attack</button>
+		<button id="coward_btn" class="activity_btn">Coward</button>
+	</div>	
 </div>
 
 <script src="/client/js/player.js"></script>
-\<script src="/client/js/deck.js"></script>
+<script src="/client/js/state.js"></script>
+<script src="/client/js/deck.js"></script>
 <script src="/client/js/hero.js"></script>
 <script src="/client/js/socket.js"></script>
 <script src="/client/js/player_cards.js"></script>
@@ -59,6 +66,7 @@
     var signDivSignIn = document.getElementById('signDiv-signIn');
     var signDivSignUp = document.getElementById('signDiv-signUp');
     var signDivPassword = document.getElementById('signDiv-password');
+	var roomOutput = document.getElementById('roomOutput');
 
 	signDivSignIn.onclick = function(){
         socket.emit('signIn',{username:signDivUsername.value,password:signDivPassword.value});
@@ -66,6 +74,9 @@
     signDivSignUp.onclick = function(){
         socket.emit('signUp',{username:signDivUsername.value,password:signDivPassword.value});
     }
+	socket.on('connectToRoom', function(message){
+		roomOutput.innerHTML = message;
+	});
     socket.on('signInResponse',function(data){
         if(data.success){
 			room_id = data.room_id;
@@ -144,13 +155,19 @@
 	var ctx_ui_player_hero = document.getElementById("ctx-ui-player-hero").getContext("2d");
 	var ctx_ui_enemy_hero = document.getElementById("ctx-ui-enemy-hero").getContext("2d");
 	var ctx_ui_player_keep = document.getElementById("ctx-ui-player-keep").getContext("2d");
+	var ctx_ui_enemy_keep = document.getElementById("ctx-ui-enemy-keep").getContext("2d");
 	var ctx_ui_cards_left = document.getElementById("ctx-ui-cards-left").getContext("2d");
 	var ctx_ui_cards_right = document.getElementById("ctx-ui-cards-right").getContext("2d");
 	var ctx_ui_cards_player = document.getElementById("ctx-ui-cards-player").getContext("2d");
 	var ctx_ui_cards_enemy = document.getElementById("ctx-ui-cards-enemy").getContext("2d");
+	//Create a last class for these
 	var lastHealth = null;
 	var lastPowerCrystal = null;
 	var lastHeroName = null;
+	var lastControl = null;
+	var lastChooseCard = null;
+	var lastPlayCards = null;
+	var lastActivity = null;
 	const DECK_LIMIT = 4;
 	Player.list = {};
 	Hero.list = {};
@@ -161,6 +178,7 @@
 	ctx_ui_player_hero.font = '20px Arial';
 	ctx_ui_enemy_hero.font = '20px Arial';
 	ctx_ui_player_keep.font = '20px Arial';
+	ctx_ui_enemy_keep.font = '20px Arial';
 	ctx_ui_cards_left.font = '20px Arial';
 	ctx_ui_cards_right.font = '20px Arial';
 	ctx_ui_cards_player.font = '20px Arial';
@@ -202,10 +220,12 @@
 			drawBackground();
 			drawPlayerHero();
 			drawEnemyHero();
-			drawCardsLeft();
-			drawCardsRight();
 			drawCardsPlayer();
 			drawCardsEnemy();
+			drawPlayerState();
+			drawOppentState();
+			drawPlayerKeep();
+			drawEnemyKeep();
 		}
 
 	},40);
@@ -265,5 +285,16 @@ var getDeckImages = function(type){
 	}
 }
 
+/**** Activity  ****/
+var atk_btn = document.getElementById('attack_btn');
+var coward_btn = document.getElementById('coward_btn');
+
+atk_btn.onclick = function(){
+	socket.emit('attackActivity');
+}
+
+coward_btn.onclick = function(){
+	socket.emit('cowardActivity');
+}
        	
 </script>
