@@ -1,9 +1,9 @@
 State = function(){
     var self = {
-        control:null,
-        choose_card:null,
-        play_cards:null,
-        activity:null,
+        control:null,       //Bool: Client with current control
+        choose_card:null,   //Bool: true ~ option to select card
+        play_cards:null,    //Bool: true ~ option to play cards
+        activity:null,      //Bool: true ~ option to attack/coward
     }
 
     //Desc: Updates states of the client
@@ -34,20 +34,16 @@ State.assignStatesInitial = function(list, room, room_size){
 
 	if(checkRoomSize(player_list, room_size)){
         console.log("Assigning states in room: " + room);
-        let controler = assignControlStates(player_list, room_size);
+        let controler = State.assignControlStates(player_list, room_size);
         Player.list[controler].powerCrystalModify(1);
     }
 
 }
 
-
+//Desc: Passes control from client to client, adds power crystal to client
+//Pre: list of all players, id of client with control, room number
 State.changeControl = function(list, cur_id, room){
-    let player_list = [];
-	Object.keys(list).forEach(key => {
-		if(list[key].room_id === room){
-			player_list.push(list[key]);
-		}
-	});
+    let player_list = getPlayersInRoom(list, room);
 
     for(var i in player_list){
         if(player_list[i].id !== cur_id){
@@ -57,35 +53,10 @@ State.changeControl = function(list, cur_id, room){
     }
 }
 
-/* Helper functions */
-
-//Desc: Checks amount of players in room, alerts if room size is too large, passes information if ready to assign states to players
-//Pre: list of players in current room, size of the players in the current room
-//Post: bool ~ true: assign states, false: wait for more players
-var checkRoomSize = function(player_list, room_size){
-    let readyToAssign = false;
-	if(player_list.length > room_size){
-		console.log("Error ~ too many players have joined game: " + room);
-	}
-	else if(player_list.length === room_size){
-        readyToAssign = true;
-        for(var i in player_list){
-            player_list[i].updateAction("");
-        }
-	}
-	else{
-        for(var i in player_list){
-            player_list[i].updateAction("Waiting for more players to join.");
-        }
-	}
-
-    return readyToAssign;
-}
-
 //Desc: Assigns control to a random player in the room, and sets all other players to false in all states
 //Pre: list of players in current room, size of the current room
 //Post: null
-var assignControlStates = function(player_list, room_size){
+State.assignControlStates = function(player_list, room_size){
     let  controlPlayer = player_list[Math.floor(Math.random() * room_size)].id;    
     for(let i in player_list){
         if(player_list[i].id === controlPlayer){
