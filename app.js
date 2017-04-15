@@ -1,12 +1,17 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
+//var mysql = require('mysql');
+
+
 
 require('./server/player_s');
 require('./server/hero_s');
 require('./client/js/player_cards');
 require('./server/state_s.js');
 require('./server/deck_s');
+require('./server/mysql_s.js');
+
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/client/index.html');

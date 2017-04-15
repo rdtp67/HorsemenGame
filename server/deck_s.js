@@ -70,3 +70,4 @@ var h10 = Deck('p1', 'Add Health',  'Plague', 'sss', 4,function(player){
 });
 var h9 = Deck('c2', 'PC + 3', 'Conquest', 'dddd', 7,function(player){
 	player.power_crystal+=3;});
+
