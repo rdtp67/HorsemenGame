@@ -1,0 +1,11 @@
+create table keep(
+keep_id INT NOT NULL AUTO_INCREMENT,
+stat_id INT DEFAULT NULL,
+stat_special_id INT DEFAULT NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(keep_id),
+FOREIGN KEY(stat_id) REFERENCES stat(stat_id),
+FOREIGN KEY(stat_special_id) REFERENCES stat_special(stat_special_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

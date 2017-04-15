@@ -1,0 +1,16 @@
+create table stat(
+stat_id INT NOT NULL AUTO_INCREMENT,
+stat_atk_increase TINYINT DEFAULT NULL,
+stat_atk_turn_len TINYINT UNSIGNED DEFAULT NULL,
+stat_atk_perm TINYINT(1) DEFAULT 0,
+stat_def_increase TINYINT DEFAULT NULL,
+stat_def_turn_len TINYINT UNSIGNED DEFAULT NULL,
+stat_def_perm TINYINT(1) DEFAULT 0,
+stat_dodge_increase TINYINT DEFAULT NULL,
+stat_dodge_turn_len TINYINT UNSIGNED DEFAULT NULL,
+stat_dodge_perm TINYINT(1) DEFAULT 0,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(stat_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

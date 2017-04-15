@@ -1,0 +1,13 @@
+create table run_card(
+run_id int NULL AUTO_INCREMENT,
+run_type varchar(50),
+run_title varchar(50),
+run_desc varchar(500),
+run_pic blob,
+run_pc_cost tinyint unsigned,
+run_upsrt_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+run_upsrt_usr_id int,
+PRIMARY KEY(run_id),
+FOREIGN KEY(run_upsrt_usr_id) REFERENCES user(user_id)
+)
+

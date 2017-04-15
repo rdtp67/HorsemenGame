@@ -1,0 +1,13 @@
+create table user(
+user_id INT NOT NULL AUTO_INCREMENT,
+user_active char(1) DEFAULT 'T',
+user_name varchar(50) NOT NULL,
+user_slowhashsalt varchar(100) NOT NULL,
+user_fname varchar(100),
+user_lname varchar(100),
+user_email varchar(100),
+user_phone varchar(15),
+user_date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(user_id),
+UNIQUE(user_name)
+)
