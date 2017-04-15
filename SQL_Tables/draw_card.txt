@@ -1,0 +1,7 @@
+create table draw(
+draw_id INT NOT NULL AUTO_INCREMENT,
+draw_logic VARCHAR(80) NOT NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(draw_id)
+)

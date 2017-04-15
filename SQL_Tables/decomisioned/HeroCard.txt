@@ -1,0 +1,13 @@
+create table hero_card(
+hero_id int NULL AUTO_INCREMENT,
+hero_name varchar(50),
+hero_pic blob,
+hero_type varchar(50),
+hero_attack tinyint,
+hero_defense tinyint,
+hero_dodge tinyint,
+hero_upsrt_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+hero_upsrt_usr_id int,
+PRIMARY KEY(hero_id),
+FOREIGN KEY(hero_upsrt_usr_id) REFERENCES user(user_id)
+)

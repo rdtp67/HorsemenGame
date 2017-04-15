@@ -1,0 +1,8 @@
+create table power_crystal(
+power_crystal_id INT NOT NULL AUTO_INCREMENT,
+power_crystal_add TINYINT DEFAULT NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(power_crystal_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)
