@@ -1,6 +1,10 @@
 require('./run_s.js');
+//var sql = require('./mysql_s.js');
+var sql = require('./mysql_s.js');
+var util = require('util');//console.log("Run: " + util.inspect(run, {showHidden:false, depth:null}));//console.log("Run: " + util.inspect(run, false, null));
 
-Deck = function(did, dname, dhtype, ddesc, dcost, devent){
+//read that using function Foo() gets better stack traces than var Foo = function() for constructers, look for into that
+Deck = function(room, did, dname, dhtype, ddesc, dcost, devent){
 
     var self = {
         id:did,
@@ -11,63 +15,124 @@ Deck = function(did, dname, dhtype, ddesc, dcost, devent){
 		cost:dcost,
     }
 	
-	Deck.list[self.id] = self;	
-	count++;
+	if(Deck.list[room] == undefined){
+		Deck.list[room] = {deck:[]};
+		Deck.deadlist[room] = {deck:[]};
+	}	
 
-	return self;
+	Deck.list[room].deck.push(self);
+
+	//return self; //No need to return this?
 
 }
 
 Deck.list = {};
-var count = 0;
+Deck.deadlist = {};
 
-//This will need to pop the top card off, and store it?
-Deck.getTopRunCard = function(type){
+//Purpose: Returns the top card of a certain type to Player which then populates their instance of player_card
+//Also removes the card from the current deck and stores it in Deck.deadlist
+//Pre: type: type of card, room: current room of player
+//Post: one card of requested type
+Deck.getTopRunCard = function(type, room){
 	var out = {};
-	Object.keys(Deck.list).forEach(key =>{
-		if(Deck.list[key].type === type){
-			out = Deck.list[key];
+	var done = false;
+	//This will also have to alert game that there is a boost
+	for(var i in Deck.list[room].deck){
+		if(Deck.list[room].deck[i].type === type && done == false){
+			out = Deck.list[room].deck[i];
+			Deck.deadlist[room].deck[i] = Deck.list[room].deck[i];
+			Deck.list[room].deck.splice(i,1);
+			done = true;
 		}
-	});
+	}
 
 	return out;
 }
 
-Deck.getDeckCardAction = function(id,type,player){
-	for(var i in Deck.list)
+Deck.getDeckCardAction = function(id,type, player){
+	var room = player.room_id;
+	for(var i in Deck.deadlist[room].deck)
 	{
-		if(Deck.list[i].id == id)
+		if(Deck.deadlist[room].deck[i].id == id)
 		{
-			Deck.list[i].event(player);
-			player.removeCardfromInvent(Deck.list[i].id);
+			var run_id = Deck.deadlist[room].deck[i].id;
+			Deck.deadlist[room].deck[i].event(Deck.getEventForCard(run_id, player, false));//need to change the hard coded false to bool boost passed in by user upon selecting card
+			player.removeCardfromInvent(Deck.deadlist[room].deck[i].id);
 			return;
 		}
 	}
 }
 
 
-Deck.getDeckTypes = function(){
+Deck.getDeckTypes = function(room){
 	var types = [];
 	var out = [];
-
-	Object.keys(Deck.list).forEach(key =>{ //Iterates through the key values of object list
-		types.push(Deck.list[key].type);
-	})
+	for(var i = 0; i < Deck.list[room].deck.length; i++){
+		types.push(Deck.list[room].deck[i].type);
+	}
 
 	out = [...new Set(types)]; //creates new array of unique values
 
 	return(out);
 }
 
-var h7 = Deck('d1', 'Remove Health', 'Death', 'thing', 3, function(player){
-	player.health--;});
-var h8 = Deck('w1', 'Remove PC', 'War', 'thing', 3,function(player){
-	player.power_crystal--;});
-var h9 = Deck('c1', 'Add PC', 'Conquest', 'thing', 3,function(player){
-	player.power_crystal++;});
-var h10 = Deck('p1', 'Add Health',  'Plague', 'sss', 4,function(player){
-    player.health++;
-});
-var h9 = Deck('c2', 'PC + 3', 'Conquest', 'dddd', 7,function(player){
-	player.power_crystal+=3;});
+//Purpose: Get the card event for the card action requested
+//pulls the information from the database at this point for the one card
+//Pre: id: run_id for the run card needing event, player: player with the card
+Deck.getEventForCard = function(id, player, boost){
+	sql.getCardAction(id, function(err, result){
+		var run = {};//Will contain all run card instance for the id, index is on boost to tell the difference between standard and boost
+		if(!err){
+			for(var i in result){
+				let card = result[i];			
+				run[card.run_boost] = card;
+			}
+
+			let c_instance_type = (boost === true) ? 1 : 0; //run_boost 1: boosted, 0: not boosted (standard run card)
+			var c_instance = run[c_instance_type];
+
+			console.log("Run: " + util.inspect(c_instance, false, null));
+
+			if(c_instance.stat_id !== null){
+				player.statUpdate({atk_inc:c_instance.stat_atk_increase, 
+									atk_len:c_instance.stat_atk_turn_len, 
+									atk_perm:c_instance.stat_atk_perm,
+									def_inc:c_instance.stat_def_increase, 
+									def_len:c_instance.stat_def_turn_len, 
+									def_perm:c_instance.stat_def_perm,
+									dodge_inc:c_instance.stat_dodge_increase, 
+									dodge_len:c_instance.stat_dodge_turn_len, 
+									dodge_perm:c_instance.stat_dodge_perm,});
+			}
+
+			if(c_instance.power_crystal_id !== null){
+				player.powerCrystalModifier(c_instance.power_crystal_add);
+			}
+
+			if(c_instance.draw_id !== null){
+				player.drawCardUpdate(c_instance.draw_logic);
+			}
+
+
+		}
+	});	
+}
+
+
+//Purpose: Populates the deck list with the card ids
+populateDeck = function(room){
+	if(Deck.list[room] === undefined){
+		sql.getDeck(function(err, result){
+		if(!err){
+			for(var i in result){
+				Deck(room, result[i].run_id, result[i].run_name, result[i].run_type, result[i].run_desc, result[i].run_cost, function(){});
+			}
+		}
+	});
+	}
+}
+
+
+
+
 

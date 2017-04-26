@@ -8,7 +8,7 @@ Player_Cards = function(socket, server){
 
     self.addCard = function(data){
         if(self.socket){
-            self.items.push({id:data.id,type:data.type,name:data.name});
+            self.items.push({id:data.id,type:data.type,name:data.name, type:data.type, desc:data.desc, cost:data.cost});
             self.refreshRender();
         }
         return;
@@ -47,7 +47,7 @@ Player_Cards = function(socket, server){
             button.onclick = function(){
                 getCardFunc(data.id, data.type);
             }
-            button.innerText = data.name;
+            button.innerText = "Name: " + data.name + " Type: " + data.type + " Desc: " + data.desc + " Cost: " + data.cost;
             invent.appendChild(button);
         }
 

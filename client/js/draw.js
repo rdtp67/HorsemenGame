@@ -43,13 +43,13 @@ var drawPlayerHero = function(){
 		ctx_ui_player_hero.fillStyle = 'white';
 		ctx_ui_player_hero.fillText("Health: " + Player.list[selfId].health,1025,430);
 		ctx_ui_player_hero.fillText("Power Crystals: " + Player.list[selfId].power_crystal,755,430);
+		ctx_ui_player_hero.fillText("Hero Attack: " + Player.list[selfId].atk_base + " + " + Player.list[selfId].atk_mod_total,755,490);
+		ctx_ui_player_hero.fillText("Hero Defense: " + Player.list[selfId].def_base + " + " + Player.list[selfId].def_mod_total,755,520);
+		ctx_ui_player_hero.fillText("Hero Dodge: " + Player.list[selfId].dodge_base + " + " + Player.list[selfId].dodge_mod_total,755,550);
 		let hero_id = Player.list[selfId].player_hero;
 		if(hero_id !== undefined && hero_id !== null){
 			let hero = Hero.list[hero_id];
 			ctx_ui_player_hero.fillText("Hero Name: " + hero.title,755,460);
-			ctx_ui_player_hero.fillText("Hero Attack: " + hero.attack,755,490);
-			ctx_ui_player_hero.fillText("Hero Defense: " + hero.defense,755,520);
-			ctx_ui_player_hero.fillText("Hero Dodge: " + hero.dodge,755,550);
 		}
 	}
 
@@ -71,14 +71,14 @@ var drawEnemyHero = function(){
 			if(Player.list[i].id !== selfId){
 				ctx_ui_enemy_hero.fillText("Health: " + Player.list[i].health,475,230);
 				ctx_ui_enemy_hero.fillText("Power Crystals: " + Player.list[i].power_crystal,205,230);
+				ctx_ui_enemy_hero.fillText("Enemy Attack: " + Player.list[i].atk_base,205,290);
+					ctx_ui_enemy_hero.fillText("Enemy Defense: " + Player.list[i].def_base,205,320);
+					ctx_ui_enemy_hero.fillText("Enemy Dodge: " + Player.list[i].dodge_base,205,350);
 				
 				let hero_id = Player.list[i].player_hero;
 				if(hero_id !== undefined && hero_id !== null){
 					let hero = Hero.list[hero_id];
 					ctx_ui_enemy_hero.fillText("Enemy Name: " + hero.title,205,260);
-					ctx_ui_enemy_hero.fillText("Enemy Attack: " + hero.attack,205,290);
-					ctx_ui_enemy_hero.fillText("Enemy Defense: " + hero.defense,205,320);
-					ctx_ui_enemy_hero.fillText("Enemy Dodge: " + hero.dodge,205,350);
 				}
 				return;
 			}
@@ -179,16 +179,17 @@ var drawEnemyKeep = function(){
 
 	if(!selfId)
 		return;
+	if(opp !== null){
+		ctx_ui_enemy_keep.clearRect(0,0,1500,800);
+		ctx_ui_enemy_keep.beginPath();
+		ctx_ui_enemy_keep.lineWidth="4";
+		ctx_ui_enemy_keep.strokeStyle="blue";
+		ctx_ui_enemy_keep.rect(750,200,550,200);
+		ctx_ui_enemy_keep.stroke();
 
-	ctx_ui_enemy_keep.clearRect(0,0,1500,800);
-	ctx_ui_enemy_keep.beginPath();
-	ctx_ui_enemy_keep.lineWidth="4";
-	ctx_ui_enemy_keep.strokeStyle="blue";
-	ctx_ui_enemy_keep.rect(750,200,550,200);
-	ctx_ui_enemy_keep.stroke();
-
-	ctx_ui_enemy_keep.fillStyle="white";
-	ctx_ui_enemy_keep.fillText(opp.action, 770, 230, 475);
+		ctx_ui_enemy_keep.fillStyle="white";
+		ctx_ui_enemy_keep.fillText(opp.action, 770, 230, 475);
+	}
 }
 
 

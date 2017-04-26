@@ -44,7 +44,7 @@
 
 <script src="/client/js/player.js"></script>
 <script src="/client/js/state.js"></script>
-<script src="/client/js/deck.js"></script>
+<!--<script src="/client/js/deck.js"></script>-->
 <script src="/client/js/hero.js"></script>
 <script src="/client/js/socket.js"></script>
 <script src="/client/js/player_cards.js"></script>
@@ -281,7 +281,7 @@ var getDeckImages = function(type){
 		case "Conquest":
 			return '<img src="/client/img/conquest_card_temp.jpg" id="war_deck_pic" class="card">';
 		default:
-			return "";
+			return '<img src="/client/img/question_temp.jpg" id="question_temp.jpg" class="card">';
 	}
 }
 

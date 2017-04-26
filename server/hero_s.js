@@ -35,6 +35,11 @@ Hero.getAllInitPack = function(){
 	return hero;
 }
 
+Hero.getBaseStats = function(id){
+	let hero = Hero.list[id];
+	return({atk:hero.attack, def:hero.defense, dodge:hero.dodge});
+}
+
 
 var h1 = Hero(hero_count, 'Death', 'DeathHero1', 0, 0, 0);
 var h2 = Hero(hero_count, 'War', 'WarHero2', 1, 1, 1);

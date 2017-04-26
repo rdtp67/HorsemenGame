@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-//var mysql = require('mysql');
+var mysql = require('mysql');
 
 
 
@@ -10,7 +10,6 @@ require('./server/hero_s');
 require('./client/js/player_cards');
 require('./server/state_s.js');
 require('./server/deck_s');
-require('./server/mysql_s.js');
 
 
 app.get('/', function(req, res){
@@ -45,6 +44,8 @@ io.sockets.on('connection', function(socket){
 		room_num++;
 	}
 
+	populateDeck(room_num);
+
   	socket.join("room-"+room_num);
 	console.log("Room: " + room_num);
 	cur_room = room_num;
@@ -61,13 +62,14 @@ io.sockets.on('connection', function(socket){
 	//Pre: client username
 	//Note: will need to create a log in process here, check out the DG project since you've already done salt/hashing there
 	 socket.on('signIn',function(data){
-		 if(Player.list)
-                Player.onConnect(socket, data.username, cur_room);
-                socket.emit('signInResponse',{success:true, room_id:room_num});
-		 Object.keys(Player.list).forEach(key =>{
-			size++;
-		 });
-		 console.log("Players: " + size);
+		 if(Player.list){
+			Player.onConnect(socket, data.username, cur_room);
+            socket.emit('signInResponse',{success:true, room_id:room_num});
+			Object.keys(Player.list).forEach(key =>{
+				size++;
+		 	});
+			console.log("Players: " + size);
+		 }
     });
 
 	//Desc: Socket listens for client signing up

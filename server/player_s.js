@@ -6,6 +6,7 @@ require('./deck_s.js');
 require('./state_s.js');
 require('../client/js/player_cards');
 require('./helpers_s.js');
+require('./run_action_s.js');
 
 
 var initPack = {};				//Package sent to all clients in room when player connects initially
@@ -26,6 +27,7 @@ Player = function(param){
 	self.player_hero = null;
 	self.hero_type = card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
 	self.action = "";
+	self.run_action = new Run_Action();
 
 	self.getInitPack = function(){
 		return {
@@ -38,6 +40,7 @@ Player = function(param){
 			hero:self.player_hero,
 			state:self.state,
 			action:self.action,
+			ra:self.run_action.getInitPackRA(),
 		};
 	}
 	
@@ -50,11 +53,13 @@ Player = function(param){
 				hero:self.player_hero,
 				state:self.state,
 				action:self.action,
+				ra:self.run_action.getUpdatePackRA(),
 			};
 	}
 
-	self.addCardtoInvent = function(type){
-		self.player_cards.addCard(Deck.getTopRunCard(type));
+	self.addCardtoInvent = function(type, amount = 1){
+		for(var i = 0; i < amount; i++)
+			self.player_cards.addCard(Deck.getTopRunCard(type, self.room_id));
 		return;
 	}
 
@@ -65,6 +70,7 @@ Player = function(param){
 
 	self.assignHeroCard = function(id){
 		self.player_hero = id;
+		self.run_action.stat.setBaseStats(Hero.getBaseStats(id));
 	}
 
 	self.updateStates = function(states_info){
@@ -76,19 +82,60 @@ Player = function(param){
 		self.action = action_message;
 	}
 
-	self.healthModified = function(total){
+	self.healthModifier = function(total){
 		self.health += total;
 	}
 
-	self.powerCrystalModify = function(total){
+	self.powerCrystalModifier = function(total){
 		self.power_crystal += total;
 	}
-	
+
+	self.statUpdate = function(data){
+		if(data.atk_inc !== 0){
+			if(data.atk_perm === 0)
+				self.run_action.stat.atk_mod.push({atk_inc:data.atk_inc, atk_len:data.atk_len});
+			else
+				self.run_action.stat.atk_perm_mod = data.atk_inc;
+			self.run_action.stat.atk_mod_total += data.atk_inc;
+		}
+
+		if(data.def_inc !== 0){
+			if(data.def_perm === 0)
+				self.run_action.stat.def_mod.push({def_inc:data.def_inc, def_len:data.def_len});
+			else
+				self.run_action.stat.def_perm_mod = data.def_inc;
+			self.run_action.stat.def_mod_total += data.def_inc;
+		}
+
+		if(data.dodge_inc !== 0){
+			if(data.dodge_perm === 0)
+				self.run_action.stat.dodge_mod.push({dodge_inc:data.dodge_inc, dodge_len:data.dodge_len});
+			else
+				self.run_action.stat.dodge_perm_mod = data.dodge_inc;
+			self.run_action.stat.dodge_mod_total += data.dodge_inc;
+		}
+		
+		console.log(data.atk_inc + " " + data.atk_perm + " " + data.atk_len + " " + self.run_action.stat.atk_mod_total);
+		console.log(data.def_inc + " " + data.def_perm + " " + data.def_len + " " + self.run_action.stat.def_mod_total);
+		console.log(data.dodge_inc + " " + data.dodge_perm + " " + data.dodge_len + " " + self.run_action.stat.dodge_mod_total);
+
+	}
+
+	self.drawCardUpdate = function(logic){
+		var logic_out;
+		logic_out = self.run_action.draw.getCardLogic(logic);
+		if(logic_out.length <= 1 && (self.run_action.draw.getCardLogic(logic_out).length) <= 1){
+			console.log("yep");
+		}
+		else{
+			console.log("nop");
+		}
+	}
+
 	Player.list[self.id] = self;
 	initPack[self.room_id] = {player:[]};
 	initPack[self.room_id].player.push(self.getInitPack());
-	
-	return self;
+	return self; 
 }
 
 Player.list = {};
@@ -100,6 +147,9 @@ Player.onConnect = function(socket, name, room){
 		socket:socket,
 		room_id:room,
 		name:name});
+
+		
+		console.log("playerDeck" + Deck.list[player.room_id]);
 
 		//Passes the player package to client that has just joined
 		socket.emit('init',{
@@ -113,7 +163,7 @@ Player.onConnect = function(socket, name, room){
 		});
 
 		//Passes deck information to the player when first connecting
-		socket.emit('pushDecks', Deck.getDeckTypes());
+		socket.emit('pushDecks', Deck.getDeckTypes(player.room_id));
 
 		socket.on('cardAction', function(id, type){
 			if(!player.player_cards.hasItem(id))
@@ -121,17 +171,19 @@ Player.onConnect = function(socket, name, room){
 				console.log("Cheater! Player ID: " + player.id);
 			}
 			else{
-				if(player.state.play_cards){
+				//Turned off for testing
+				//if(player.state.play_cards){
 					Deck.getDeckCardAction(id, type, player);
-				}
+				//}
 			}
 		});
 		
 		socket.on('addRunCard', function(type){
-			if(player.state.choose_card){
+			//Turned off for testing
+			//if(player.state.choose_card){
 				player.addCardtoInvent(type);
 				player.updateStates({control:true,play_cards:true, activity:true});
-			}
+			//}
 		});
 
 		socket.on('removeCards', function(data){
@@ -248,5 +300,4 @@ Player.attackOpponent = function(cur_id, room){
 	}
 
 }
-
 

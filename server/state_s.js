@@ -35,7 +35,7 @@ State.assignStatesInitial = function(list, room, room_size){
 	if(checkRoomSize(player_list, room_size)){
         console.log("Assigning states in room: " + room);
         let controler = State.assignControlStates(player_list, room_size);
-        Player.list[controler].powerCrystalModify(1);
+        Player.list[controler].powerCrystalModifier(1);
     }
 
 }
@@ -48,7 +48,8 @@ State.changeControl = function(list, cur_id, room){
     for(var i in player_list){
         if(player_list[i].id !== cur_id){
             player_list[i].updateStates({control:true, choose_card:true});
-            player_list[i].powerCrystalModify(1);
+            player_list[i].powerCrystalModifier(1);
+            player_list[i].run_action.stat.checkTurnEnd();
         }
     }
 }
