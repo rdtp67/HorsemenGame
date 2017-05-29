@@ -1,8 +1,10 @@
 create table hero_action(
 hero_action_id INT NOT NULL AUTO_INCREMENT,
-hero_action_cost_modifier TINYINT DEFAULT NULL,
+hero_id INT NOT NULL,
+hero_action_cost TINYINT NOT NULL,
+hero_action_desc(255) VARCHAR NOT NULL,
 upsrt_user INT NOT NULL,
 upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY(hero_action_id),
-FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+FOREIGN KEY(hero_id) REFERENCES hero(hero_id)
 )

@@ -1,0 +1,10 @@
+create table hero_type(
+hero_type_id INT NOT NULL AUTO_INCREMENT,
+hero_id INT NOT NULL,
+hero_type_name VARCHAR(30) NOT NULL,
+hero_type_base TINYINT(1) DEFAULT 0,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(hero_type_id),
+FOREIGN KEY(hero_id) REFERENCES hero(hero_id)
+)

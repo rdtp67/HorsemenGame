@@ -1,10 +1,8 @@
 create table health(
 health_id INT NOT NULL AUTO_INCREMENT,
 health_add TINYINT DEFAULT NULL,
-health_permenant TINYINT(1) DEFAULT 0,
 health_above_max TINYINT(1) DEFAULT 0,
 health_multiply TINYINT UNSIGNED DEFAULT NULL,
-health_increase SMALLINT DEFAULT NULL,
 upsrt_user INT NOT NULL,
 upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY(health_id),

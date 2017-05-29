@@ -12,10 +12,11 @@ require('./run_action_s.js');
 var initPack = {};				//Package sent to all clients in room when player connects initially
 var removePack = {player:[]};	//Package sent to all clients when player disconnects
 const GAMEPLAYERSIZE = 2;		//This needs to be passed in, in the future
+const HEALTHMAX = 20; 			//This needs to be passed in, in the future
 
 Player = function(param){
 	var self = {
-		health:20,
+		health:HEALTHMAX,
 		power_crystal:0,
 	}
 	
@@ -121,14 +122,42 @@ Player = function(param){
 
 	}
 
+	//Need to fix this for the hard coded values
 	self.drawCardUpdate = function(logic){
 		var logic_out;
 		logic_out = self.run_action.draw.getCardLogic(logic);
 		if(logic_out.length <= 1 && (self.run_action.draw.getCardLogic(logic_out).length) <= 1){
-			console.log("yep");
+			var invCards = Draw_Card.getDrawCardAmounts(logic_out);
+			console.log("inv" + invCards.Death + invCards.Conquest + invCards.War + invCards.Plauge);
+			if(invCards.Death > 0){
+				self.addCardtoInvent('Death', invCards.Death);
+			}
+			if(invCards.Conquest > 0){
+				self.addCardtoInvent('Conquest', invCards.Conquest);
+			}
+			if(invCards.War > 0){
+				self.addCardtoInvent('War', invCards.War);
+			}
+			if(invCards.Plauge > 0){
+				self.addCardtoInvent('Plauge', invCards.Plague);
+			}
 		}
 		else{
-			console.log("nop");
+			console.log("nop"); //tabling this until i figure you these should work
+
+		}
+	}
+
+	self.healthUpdate = function(data){
+		var tempHealth = self.health + data.h_add;
+		if(tempHealth > HEALTHMAX && data.h_perm === 1){
+			self.healthModifier(data.h_add);
+		}
+		else if(tempHealth > HEALTHMAX && data.h_perm === 0){
+			self.healthModifier((HEALTHMAX - self.health));
+		}
+		else{
+			self.healthModifier(data.h_add);
 		}
 	}
 
@@ -147,9 +176,6 @@ Player.onConnect = function(socket, name, room){
 		socket:socket,
 		room_id:room,
 		name:name});
-
-		
-		console.log("playerDeck" + Deck.list[player.room_id]);
 
 		//Passes the player package to client that has just joined
 		socket.emit('init',{
@@ -170,20 +196,25 @@ Player.onConnect = function(socket, name, room){
 			{
 				console.log("Cheater! Player ID: " + player.id);
 			}
+			else if(player.power_crystal < Deck.getCardCost(id, player.room_id))
+			{
+				console.log("Not enough PCs to player card!");
+			}
 			else{
 				//Turned off for testing
-				//if(player.state.play_cards){
+				if(player.state.play_cards){
 					Deck.getDeckCardAction(id, type, player);
-				//}
+					console.log("Cost Play: " +  Deck.getCardCost(id, player.room_id));
+				}
 			}
 		});
 		
 		socket.on('addRunCard', function(type){
 			//Turned off for testing
-			//if(player.state.choose_card){
+			if(player.state.choose_card){
 				player.addCardtoInvent(type);
 				player.updateStates({control:true,play_cards:true, activity:true});
-			//}
+			}
 		});
 
 		socket.on('removeCards', function(data){
@@ -204,6 +235,7 @@ Player.onConnect = function(socket, name, room){
 			}
 		});
 
+		//Coward has two seperate things that can happen, this can be one
 		socket.on('cowardActivity', function(){
 			if(player.state.activity){
 				player.power_crystal++;
@@ -294,7 +326,7 @@ Player.attackOpponent = function(cur_id, room){
 	else{
 		console.log("Dodge: " + opp_hero.dodge + " Mod: " + opp_mod + " Defense: " + opp_hero.defense + " Attack: " + atk_hero.attack);
 		let hitLost =  opp_hero.defense - atk_hero.attack;
-		Player.list[opp_id].healthModified(hitLost);
+		Player.list[opp_id].healthModifier(hitLost);
 		Player.list[opp_id].updateAction("Took " + hitLost + " damage from the attack!");
 		Player.list[cur_id].updateAction("Attack effective. Attack strength " + atk_hero.attack + " was stronger than " + opp_hero.defense + " defense.");
 	}

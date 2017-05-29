@@ -40,7 +40,7 @@ Deck.getTopRunCard = function(type, room){
 	for(var i in Deck.list[room].deck){
 		if(Deck.list[room].deck[i].type === type && done == false){
 			out = Deck.list[room].deck[i];
-			Deck.deadlist[room].deck[i] = Deck.list[room].deck[i];
+			Deck.deadlist[room].deck.push(Deck.list[room].deck[i]);
 			Deck.list[room].deck.splice(i,1);
 			done = true;
 		}
@@ -113,9 +113,27 @@ Deck.getEventForCard = function(id, player, boost){
 				player.drawCardUpdate(c_instance.draw_logic);
 			}
 
+			if(c_instance.health_id !== null){
+				player.healthUpdate({h_add:c_instance.health_add,
+									 h_perm:c_instance.health_above_max,});
+			}
+
 
 		}
 	});	
+}
+
+//Desc: get the cost of the card
+//Pre: id: id of the current card, room: room id for the player
+//Post: cost: cost of the card input
+Deck.getCardCost = function(id, room){
+	var c_cost;
+	for(var i = 0; i < Deck.deadlist[room].deck.length; i++){	
+		if(Deck.deadlist[room].deck[i].id == id){
+			c_cost = Deck.deadlist[room].deck[i].cost;
+		}
+	}
+	return (c_cost);
 }
 
 
@@ -126,10 +144,12 @@ populateDeck = function(room){
 		if(!err){
 			for(var i in result){
 				Deck(room, result[i].run_id, result[i].run_name, result[i].run_type, result[i].run_desc, result[i].run_cost, function(){});
+				//console.log(room + " " + result[i].run_id + " " + result[i].run_name); //Populated deck output
 			}
 		}
 	});
-	}
+}
+
 }
 
 

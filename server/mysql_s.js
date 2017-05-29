@@ -19,7 +19,7 @@ var pool = mysql.createPool({
                 console.log(err.fatal);
             }
             else{
-                conn.query('select * from run where run_boost = 0', function(err, rows, fields){
+                conn.query('select * from run', function(err, rows, fields){
                     if(!err){
                         callback(null, rows);
                     }
@@ -45,9 +45,9 @@ exports.getCardAction = function(id,callback){
                 console.log(err.fatal);
             }
             else{
-                conn.query('select distinct r.run_id, r.run_keep, r.run_boost, r.run_horsemen, r.draw_id, d.draw_logic, r.health_id, h.health_add, h.health_permenant, h.health_above_max,'
-                            + ' h.health_multiply, h.health_increase, r.hero_id, hr.hero_name, r.hero_action_id, ha.hero_action_cost_modifier, r.power_crystal_id, pc.power_crystal_add,'
-                            + ' r.special_id, s.special_next_to_perm, s.special_remove_enemy_perm, s.special_remove_enemy_atk_perm, r.stat_id, st.stat_atk_increase, st.stat_atk_turn_len,'
+                conn.query('select distinct r.run_id, r.run_keep, r.run_boost, r.run_horsemen, r.draw_id, d.draw_logic, r.health_id, h.health_add, h.health_above_max,'
+                            + ' r.hero_id, hr.hero_name, r.hero_action_id, ha.hero_action_cost_modifier, r.power_crystal_id, pc.power_crystal_add,'
+                            + ' r.special_id, s.special_next_to_perm, s.special_remove_enemy_perm, s.special_remove_enemy_atk_perm, s.special_health_multiply, r.stat_id, st.stat_atk_increase, st.stat_atk_turn_len,'
                             + ' st.stat_atk_perm, st.stat_def_increase, st.stat_def_turn_len, st.stat_def_perm, st.stat_dodge_increase, st.stat_dodge_turn_len, st.stat_dodge_perm,'
                             + ' r.stat_special_id, ss.stat_special_atk_increase_card_multi, ss.stat_special_def_multi, ss.stat_special_dodge_multi_cur'
                             + ' from run r'

@@ -50,6 +50,7 @@
 <script src="/client/js/player_cards.js"></script>
 <script src="/client/js/draw.js"></script>
 <script src="/client/js/draw_hero.js"></script>
+<script src="/client/js/draw_cardLogic.js"></script>
 <script>
 
 	var socket = io();
@@ -144,7 +145,6 @@
 		playerCards.items = items;
 		playerCards.refreshRender();
 	});
-
 	
 	/******* Game *******/
 	
@@ -183,6 +183,7 @@
 	ctx_ui_cards_right.font = '20px Arial';
 	ctx_ui_cards_player.font = '20px Arial';
 	ctx_ui_cards_enemy.font = '20px Arial';
+
 		
 	//Player Sockets
 	var selfId = null;

@@ -159,7 +159,7 @@ var drawPlayerKeep = function(){
 	ctx_ui_player_keep.clearRect(0,0,1500,800);
 	ctx_ui_player_keep.beginPath();
 	ctx_ui_player_keep.lineWidth="4";
-	ctx_ui_player_keep.strokeStyle="orange";
+	ctx_ui_player_keep.strokeStyle="white";
 	ctx_ui_player_keep.rect(200,400,550,200);
 	ctx_ui_player_keep.stroke();
 

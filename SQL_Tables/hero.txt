@@ -1,6 +1,10 @@
 create table hero(
 hero_id INT NOT NULL AUTO_INCREMENT,
 hero_name VARCHAR(80) NOT NULL,
+hero_desc VARCHAR(255),
+hero_base_atk TINYINT NOT NULL,
+hero_base_def TINYINT NOT NULL,
+hero_base_dodge TINYINT NOT NULL,
 upsrt_user INT NOT NULL,
 upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY(hero_id),
