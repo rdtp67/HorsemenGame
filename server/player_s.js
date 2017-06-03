@@ -185,7 +185,7 @@ Player.onConnect = function(socket, name, room){
 
 		//Passes all heros to player when first connecting
 		socket.emit('init_hero', {
-			hero_l:Hero.getAllInitPack(),
+			hero_l:Hero.getAllInitPack(room),
 		});
 
 		//Passes deck information to the player when first connecting

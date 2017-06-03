@@ -32,6 +32,9 @@ var room_num = 1;
 //Debug = false when live, curently allows for logging to console from front end
 var DEBUG = true;
 
+//Populates Hero List for all users, users currently using the same List of Hero player_cards
+populateHero();
+
 var io = require('socket.io')(server,{});
 io.sockets.on('connection', function(socket){
 
@@ -45,6 +48,7 @@ io.sockets.on('connection', function(socket){
 	}
 
 	populateDeck(room_num);
+	
 
   	socket.join("room-"+room_num);
 	console.log("Room: " + room_num);

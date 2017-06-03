@@ -1,5 +1,6 @@
 require('./card_s.js');
-
+require('./run_s.js');
+var sql = require('./mysql_s.js');
 var initPack_hero = {hero_l:[]};
 
 Hero = function(hid, htype, htitle, hatk, hdef, hdodge){
@@ -7,6 +8,8 @@ Hero = function(hid, htype, htitle, hatk, hdef, hdodge){
 	self.attack = hatk;
 	self.defense = hdef;
 	self.dodge = hdodge;
+	self.desc = hdesc;
+	self.subType = hstype;
 
 	self.getInitPack = function(){
 		return {
@@ -40,8 +43,12 @@ Hero.getBaseStats = function(id){
 	return({atk:hero.attack, def:hero.defense, dodge:hero.dodge});
 }
 
-
-var h1 = Hero(hero_count, 'Death', 'DeathHero1', 0, 0, 0);
-var h2 = Hero(hero_count, 'War', 'WarHero2', 1, 1, 1);
-var h3 = Hero(hero_count, 'Plague', 'PlagueHero3', 2, 2, 2);
-var h4 = Hero(hero_count, 'Conquest', 'ConquestHero4', 3, 3, 3);
+populateHero = function(){
+	sql.getHeroList(function(err, result){
+		if(!err){
+			for(var i in result){
+				console.log(result[i].hero_id);
+			}
+		}
+	});
+}

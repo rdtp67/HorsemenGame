@@ -25,7 +25,7 @@ var pool = mysql.createPool({
                     }
                     else
                     {
-                        console.log('Example failed');
+                        console.log('Error ~ getConnection() ~ mysql_s');
                     }
                 });
             }
@@ -37,9 +37,7 @@ var pool = mysql.createPool({
 
 //comment needed
 exports.getCardAction = function(id,callback){
-    console.log("ID1: " + id);
     pool.getConnection(function(err, conn){
-        console.log("ID: " + id);
         if(err){
                 console.log(err.code);
                 console.log(err.fatal);
@@ -54,7 +52,7 @@ exports.getCardAction = function(id,callback){
                             + ' left join draw d on d.draw_id = r.draw_id'
                             + ' left join health h on h.health_id = r.health_id'
                             + ' left join hero hr on hr.hero_id = r.hero_id'
-                            + ' left join hero_action ha on ha.hero_action_id = r.hero_action_id'
+                            + ' left join hero_action_mod ha on ha.hero_action_id = r.hero_action_id'
                             + ' left join power_crystal pc on pc.power_crystal_id = r.power_crystal_id'
                             + ' left join special s on s.special_id = r.special_id'
                             + ' left join stat st on st.stat_id = r.stat_id'
@@ -65,7 +63,7 @@ exports.getCardAction = function(id,callback){
                     }
                     else
                     {
-                        console.log('Example failed');
+                        console.log('Error ~ getCardAction() ~ mysql_s');
                     }
                 });
             }
@@ -73,5 +71,33 @@ exports.getCardAction = function(id,callback){
            conn.release();
         }  
     );
+}
+
+/*
+    Purpose: Gets all information needed for the hero table to be used to create a List of Heros
+    Pre: callback ~ funcation used to return information
+    Post: rows ~ callback funciton used to pass row information
+*/
+exports.getHeroList = function(callback){
+    pool.getConnection(function(err, conn){
+        if(err){
+            console.log(err.code);
+            console.log(err.fatal);
+        }
+        else{
+            conn.query('select h.hero_id, h.hero_name, h.hero_desc, h.hero_base_atk, h.hero_base_def, h.hero_base_dodge, ht.hero_type_name, ht.hero_type_base '
+                        + 'from hero as h '
+                        + 'join hero_type as ht on ht.hero_id = h.hero_id'
+                        , function(err, rows, fiedls){
+                            if(!err){
+                                callback(null, rows);
+                            }
+                            else{
+                                console.log('Error ~ getHeroList() ~ mysql_s');
+                            }
+                        });
+        }
+        conn.release();
+    });
 }
 
