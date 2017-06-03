@@ -30,6 +30,14 @@ button.activity_btn{
     height: 160;
 }
 
+#hero_actions{
+    position: absolute;
+    left: 20;
+    top: 450;
+    width:180;
+    height: 160;
+}
+
 #deck0{
     position: absolute;
     left: 1320;

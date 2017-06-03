@@ -36,6 +36,7 @@
 
 	<div id="user_cards"></div>
 	<div id="user_hero"></div>
+	<div id="hero_actions"></div>
 	<div id="player_actions">
 		<button id="attack_btn" class="activity_btn">Attack</button>
 		<button id="coward_btn" class="activity_btn">Coward</button>
@@ -48,6 +49,7 @@
 <script src="/client/js/hero.js"></script>
 <script src="/client/js/socket.js"></script>
 <script src="/client/js/player_cards.js"></script>
+<script src="/client/js/hero_action.js"></script>
 <script src="/client/js/draw.js"></script>
 <script src="/client/js/draw_hero.js"></script>
 <script src="/client/js/draw_cardLogic.js"></script>
@@ -144,6 +146,13 @@
 	socket.on('updateCards', function(items){
 		playerCards.items = items;
 		playerCards.refreshRender();
+	});
+
+	/**** Hero Action ****/
+	var heroAction = new Hero_Action(socket, false);
+	socket.on('createHeroAction', function(actions){
+		heroAction.actions = actions;
+		heroAction.createHeroActionButtons();
 	});
 	
 	/******* Game *******/
@@ -297,5 +306,6 @@ atk_btn.onclick = function(){
 coward_btn.onclick = function(){
 	socket.emit('cowardActivity');
 }
+
        	
 </script>

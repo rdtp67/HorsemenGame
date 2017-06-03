@@ -7,7 +7,9 @@ require('./state_s.js');
 require('../client/js/player_cards');
 require('./helpers_s.js');
 require('./run_action_s.js');
-
+require('../client/js/hero_action');
+require('./action_s.js');
+var sql = require('./mysql_s.js');
 
 var initPack = {};				//Package sent to all clients in room when player connects initially
 var removePack = {player:[]};	//Package sent to all clients when player disconnects
@@ -26,9 +28,10 @@ Player = function(param){
 	self.state = new State(param.socket, true);
 	self.player_cards = new Player_Cards(param.socket, true);
 	self.player_hero = null;
-	self.hero_type = card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
+	self.hero_type = "War"; // card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
 	self.action = "";
 	self.run_action = new Run_Action();
+	self.hero_action = new Hero_Action(param.socket, true);
 
 	self.getInitPack = function(){
 		return {
@@ -55,6 +58,7 @@ Player = function(param){
 				state:self.state,
 				action:self.action,
 				ra:self.run_action.getUpdatePackRA(),
+				ha:self.hero_action.actions,
 			};
 	}
 
@@ -76,6 +80,23 @@ Player = function(param){
 
 	self.updateStates = function(states_info){
 		self.state.updateStates(states_info);
+	}
+
+	self.getHeroActionCard = function(hero_id){
+            sql.getHeroActionInformation(hero_id, function(err, result){
+                    if(!err){
+                        for(var i in result){
+							console.log(i);
+                            self.hero_action.actions.push({id:result[i].hero_action_id, cost:result[i].hero_action_cost, desc:result[i].hero_action_desc});
+                        }
+                    }
+					self.createHeroActionButtons();
+                });
+
+	}
+
+	self.createHeroActionButtons = function(){
+		self.hero_action.createHeroActionButtons();
 	}
 
 	self.updateAction = function(action_message){
@@ -208,6 +229,11 @@ Player.onConnect = function(socket, name, room){
 				}
 			}
 		});
+
+		socket.on('heroActionAction', function(id){
+			console.log("Hero Action" + id);
+			Action.getHeroActions(id, player);
+		});
 		
 		socket.on('addRunCard', function(type){
 			//Turned off for testing
@@ -223,6 +249,7 @@ Player.onConnect = function(socket, name, room){
 
 		socket.on('addPlayerHeroCard', function(id){
 			player.assignHeroCard(id);
+			player.getHeroActionCard(id);
 			//Assigns game states once all players have joined
 			State.assignStatesInitial(Player.list, room, GAMEPLAYERSIZE); //GAMEPLAYERSIZE will need to be changed in the future
 		});

@@ -3,7 +3,7 @@ require('./run_s.js');
 var sql = require('./mysql_s.js');
 var initPack_hero = {hero_l:[]};
 
-Hero = function(hid, htype, htitle, hatk, hdef, hdodge){
+Hero = function(hid, htype, htitle, hatk, hdef, hdodge, hdesc, hstype){
 	var self = Card(hid, htype, htitle);
 	self.attack = hatk;
 	self.defense = hdef;
@@ -47,7 +47,7 @@ populateHero = function(){
 	sql.getHeroList(function(err, result){
 		if(!err){
 			for(var i in result){
-				console.log(result[i].hero_id);
+				Hero(result[i].hero_id, result[i].type_base, result[i].hero_name, result[i].hero_base_atk, result[i].hero_base_def, result[i].hero_base_dodge, result[i].hero_desc, result[i].type_sub);
 			}
 		}
 	});

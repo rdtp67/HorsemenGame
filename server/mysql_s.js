@@ -74,6 +74,32 @@ exports.getCardAction = function(id,callback){
 }
 
 /*
+    Purpose: gets hero action action
+    Pre: id ~ hero_action_ids, callback ~ funcation used to return information
+    Post: rows ~ callback funcation used to pass row informaiton
+*/
+exports.getHeroActionAction = function(id,callback){
+    pool.getConnection(function(err, conn){
+        if(err){
+            console.log(err.code);
+            console.log(err.fatal);
+        }
+        else{
+            conn.query(' '
+                        , function(err, rows, fiedls){
+                            if(!err){
+                                callback(null, rows);
+                            }
+                            else{
+                                console.log('Error ~ getHeroActionInformation() ~ mysql_s');
+                            }
+                        });
+        }
+        conn.release();
+    });
+}
+
+/*
     Purpose: Gets all information needed for the hero table to be used to create a List of Heros
     Pre: callback ~ funcation used to return information
     Post: rows ~ callback funciton used to pass row information
@@ -85,15 +111,47 @@ exports.getHeroList = function(callback){
             console.log(err.fatal);
         }
         else{
-            conn.query('select h.hero_id, h.hero_name, h.hero_desc, h.hero_base_atk, h.hero_base_def, h.hero_base_dodge, ht.hero_type_name, ht.hero_type_base '
+            conn.query('select h.hero_id, h.hero_name, h.hero_desc, h.hero_base_atk, h.hero_base_def, h.hero_base_dodge, ht.hero_type_name as type_base, ht2.hero_type_name as type_sub '
                         + 'from hero as h '
-                        + 'join hero_type as ht on ht.hero_id = h.hero_id'
+                        + 'join hero_type as ht on ht.hero_id = h.hero_id and ht.hero_type_base = 1 '
+                        + 'left join ( select hero_id, hero_type_name, hero_type_base '
+                                    + 'from hero_type '
+                                    + 'where hero_type_base = 0) as ht2 on ht2.hero_id = h.hero_id '
                         , function(err, rows, fiedls){
                             if(!err){
                                 callback(null, rows);
                             }
                             else{
                                 console.log('Error ~ getHeroList() ~ mysql_s');
+                            }
+                        });
+        }
+        conn.release();
+    });
+}
+
+/*
+    Purpose: Gets the main information for all hero actions associated with a hero
+    Pre: id ~ hero_id, callback ~ funcation used to return information
+    Post: rows ~ callback funcation used to pass row informaiton
+*/
+exports.getHeroActionInformation = function(id,callback){
+    pool.getConnection(function(err, conn){
+        if(err){
+            console.log(err.code);
+            console.log(err.fatal);
+        }
+        else{
+            conn.query('select hero_action_id, hero_action_cost, hero_action_desc '
+                        + 'from hero_action '
+                        + 'where hero_id = ? '
+                        + 'order by hero_action_cost'
+                        , [id], function(err, rows, fiedls){
+                            if(!err){
+                                callback(null, rows);
+                            }
+                            else{
+                                console.log('Error ~ getHeroActionInformation() ~ mysql_s');
                             }
                         });
         }

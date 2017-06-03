@@ -46,6 +46,8 @@ var drawPlayerHero = function(){
 		ctx_ui_player_hero.fillText("Hero Attack: " + Player.list[selfId].atk_base + " + " + Player.list[selfId].atk_mod_total,755,490);
 		ctx_ui_player_hero.fillText("Hero Defense: " + Player.list[selfId].def_base + " + " + Player.list[selfId].def_mod_total,755,520);
 		ctx_ui_player_hero.fillText("Hero Dodge: " + Player.list[selfId].dodge_base + " + " + Player.list[selfId].dodge_mod_total,755,550);
+		if(Player.list[selfId].actions.length > 0)
+			ctx_ui_player_hero.fillText("Hero Action " + Player.list[selfId].actions[0].id,755,580);
 		let hero_id = Player.list[selfId].player_hero;
 		if(hero_id !== undefined && hero_id !== null){
 			let hero = Hero.list[hero_id];

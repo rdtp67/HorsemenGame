@@ -19,7 +19,7 @@
 		self.def_perm_mod = initPack.ra.stat_def_perm_mod;
 		self.dodge_mod_total = initPack.ra.stat_dodge_mod_total;
 		self.dodge_perm_mod = initPack.ra.stat_dodge_perm_mod;
-					
+		self.actions = [];		
 		Player.list[self.id] = self;
 		return self;
 	}
@@ -69,6 +69,9 @@ var player_update = function(data){
 				if(pack.ra.stat_dodge_perm_mod !== undefined && pack.ra.stat_dodge_perm_mod !== p.dodge_perm_mod){
 					p.dodge_perm_mod = pack.ra.stat_dodge_perm_mod;
 				}
+				if(p.actions != undefined && pack.ha != undefined){
+					p.actions = pack.ha;
+				}
 			}
 		}
 }
@@ -77,4 +80,11 @@ var player_remove = function(data){
     for(var i = 0 ; i < data.player.length; i++){
 			delete Player.list[data.player[i]];
 		}
+}
+
+
+//Helpers
+getHeroActionAction = function(id){
+    socket.emit('heroActionAction', id);
+    return;
 }

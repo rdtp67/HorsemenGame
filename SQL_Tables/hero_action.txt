@@ -1,10 +1,22 @@
 create table hero_action(
 hero_action_id INT NOT NULL AUTO_INCREMENT,
 hero_id INT NOT NULL,
+draw_id INT DEFAULT NULL,
+health_id INT DEFAULT NULL,
+power_crystal_id INT DEFAULT NULL,
+special_id INT DEFAULT NULL,
+stat_id INT DEFAULT NULL,
+stat_special_id INT DEFAULT NULL,
 hero_action_cost TINYINT NOT NULL,
-hero_action_desc(255) VARCHAR NOT NULL,
+hero_action_desc VARCHAR(255) NOT NULL,
 upsrt_user INT NOT NULL,
 upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY(hero_action_id),
-FOREIGN KEY(hero_id) REFERENCES hero(hero_id)
+FOREIGN KEY(hero_id) REFERENCES hero(hero_id),
+FOREIGN KEY(draw_id) REFERENCES draw(draw_id),
+FOREIGN KEY(health_id) REFERENCES health(health_id),
+FOREIGN KEY(power_crystal_id) REFERENCES power_crystal(power_crystal_id),
+FOREIGN KEY(special_id) REFERENCES special(special_id),
+FOREIGN KEY(stat_id) REFERENCES stat(stat_id),
+FOREIGN KEY(stat_special_id) REFERENCES stat_special(stat_special_id)
 )
