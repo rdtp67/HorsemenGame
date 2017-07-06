@@ -1,0 +1,9 @@
+create table ref_run_card_type(
+ref_run_card_type_id INT NOT NULL AUTO_INCREMENT,
+ref_run_card_type_code TINYINT NOT NULL,
+ref_run_card_type_name varchar(80) NOT NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(ref_run_card_type_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

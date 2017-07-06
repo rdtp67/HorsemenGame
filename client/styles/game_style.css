@@ -22,14 +22,6 @@ button.activity_btn{
     top: 470;
 }
 
-#user_cards{
-    position: absolute;
-    left: 220;
-    top: 620;
-    width:1060;
-    height: 160;
-}
-
 #hero_actions{
     position: absolute;
     left: 20;

@@ -1,0 +1,9 @@
+create table stat_type(
+stat_type_id INT NOT NULL AUTO_INCREMENT,
+stat_type TINYINT DEFAULT NULL,
+stat_type_desc varchar(100),
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(stat_type_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

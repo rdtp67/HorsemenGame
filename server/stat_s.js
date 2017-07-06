@@ -25,30 +25,30 @@ Stat = function(){
 
     self.checkTurnEnd = function(){
 
-        for(let i in self.atk_mod){
-            self.atk_mod[i].atk_len--;
-            if(self.atk_mod[i].atk_len < 1){
-                self.atk_mod_total -= self.atk_mod[i].atk_inc;
-                self.atk_mod.splice(i,1);
+        
+        for(var j = self.atk_mod.length - 1; j >= 0; j--){
+            self.atk_mod[j].atk_len--;
+            if(self.atk_mod[j].atk_len < 1){
+                self.atk_mod_total -= self.atk_mod[j].atk_inc;
+                self.atk_mod.splice(j, 1);
             }
         }
 
-        for(let i in self.def_mod){
-            self.def_mod[i].def_len--;
-            if(self.def_mod[i].def_len < 1){
-                self.def_mod_total -= self.def_mod[i].def_inc;
-                self.def_mod.splice(i,1);
+        for(var j = self.def_mod.length - 1; j >= 0; j--){
+            self.def_mod[j].def_len--;
+            if(self.def_mod[j].def_len < 1){
+                self.def_mod_total -= self.def_mod[j].def_inc;
+                self.def_mod.splice(j, 1);
             }
         }
 
-        for(let i in self.dodge_mod){
-            self.dodge_mod[i].dodge_len--;
-            if(self.dodge_mod[i].dodge_len < 1){
-                self.dodge_mod_total -= self.dodge_mod[i].dodge_inc;
-                self.dodge_mod.splice(i,1);
+        for(var j = self.dodge_mod.length - 1; j >= 0; j--){
+            self.dodge_mod[j].dodge_len--;
+            if(self.dodge_mod[j].dodge_len < 1){
+                self.dodge_mod_total -= self.dodge_mod[j].dodge_inc;
+                self.dodge_mod.splice(j, 1);
             }
         }
-
     }
 
     return self;

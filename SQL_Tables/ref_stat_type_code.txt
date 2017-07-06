@@ -1,0 +1,9 @@
+create table ref_stat_type_code(
+ref_stat_type_code_id INT NOT NULL AUTO_INCREMENT,
+ref_stat_type_code TINYINT NOT NULL,
+ref_stat_type_code_name varchar(80) NOT NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(ref_stat_type_code_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

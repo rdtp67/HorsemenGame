@@ -1,0 +1,11 @@
+div.admin_d{
+    position: absolute;
+    float: right;
+    border: 1px solid #180;
+    width: 400px;
+    height: 800px;
+}
+
+h1.adminHeader_h1{
+    text-align: center;
+}

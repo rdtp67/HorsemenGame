@@ -1,0 +1,20 @@
+#user_cards{
+    position: absolute;
+    left: 220;
+    top: 620;
+    width:1060;
+    height: 160;
+}
+
+div.card{   
+  display: inline-block;
+  text-align: left;
+  margin: 2px;
+  padding: 5px 5px 0 5px;
+  width: 150px;
+  height: 120px;
+
+  font-size: 11px;
+  background-color: white;
+  border: solid 1px white;
+}

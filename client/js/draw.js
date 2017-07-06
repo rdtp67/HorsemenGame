@@ -42,7 +42,7 @@ var drawPlayerHero = function(){
 		lastPowerCrystal = Player.list[selfId].power_crystal;
 		ctx_ui_player_hero.fillStyle = 'white';
 		ctx_ui_player_hero.fillText("Health: " + Player.list[selfId].health,1025,430);
-		ctx_ui_player_hero.fillText("Power Crystals: " + Player.list[selfId].power_crystal,755,430);
+		ctx_ui_player_hero.fillText("Power Crystals: " + Player.list[selfId].power_crystal_used + "/" + Player.list[selfId].power_crystal,755,430);
 		ctx_ui_player_hero.fillText("Hero Attack: " + Player.list[selfId].atk_base + " + " + Player.list[selfId].atk_mod_total,755,490);
 		ctx_ui_player_hero.fillText("Hero Defense: " + Player.list[selfId].def_base + " + " + Player.list[selfId].def_mod_total,755,520);
 		ctx_ui_player_hero.fillText("Hero Dodge: " + Player.list[selfId].dodge_base + " + " + Player.list[selfId].dodge_mod_total,755,550);
@@ -72,7 +72,7 @@ var drawEnemyHero = function(){
 		{
 			if(Player.list[i].id !== selfId){
 				ctx_ui_enemy_hero.fillText("Health: " + Player.list[i].health,475,230);
-				ctx_ui_enemy_hero.fillText("Power Crystals: " + Player.list[i].power_crystal,205,230);
+				ctx_ui_enemy_hero.fillText("Power Crystals: " + Player.list[i].power_crystal_used + "/" + Player.list[i].power_crystal,205,230);
 				ctx_ui_enemy_hero.fillText("Enemy Attack: " + Player.list[i].atk_base,205,290);
 					ctx_ui_enemy_hero.fillText("Enemy Defense: " + Player.list[i].def_base,205,320);
 					ctx_ui_enemy_hero.fillText("Enemy Dodge: " + Player.list[i].dodge_base,205,350);

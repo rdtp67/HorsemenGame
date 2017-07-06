@@ -1,0 +1,10 @@
+create table ref_directed_code(
+ref_directed_code_id INT NOT NULL AUTO_INCREMENT,
+directed_code TINYINT NOT NULL,
+directed_name varchar(50) NOT NULL,
+directed_desc varchar(255) NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(ref_directed_code_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

@@ -1,0 +1,9 @@
+create table ref_boost_code(
+ref_boost_code_id INT NOT NULL AUTO_INCREMENT,
+boost_code TINYINT NOT NULL,
+boost_code_name varchar(80),
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(ref_boost_code_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

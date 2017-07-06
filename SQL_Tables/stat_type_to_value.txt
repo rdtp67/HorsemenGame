@@ -1,0 +1,10 @@
+create table stat_type_to_value(
+stat_type_to_value_id INT NOT NULL AUTO_INCREMENT,
+stat_type_to_value_amount tinyint NOT NULL,
+stat_type_code tinyint NOT NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(stat_type_to_value_id),
+FOREIGN KEY(stat_type_code) REFERENCES ref_stat_type_code(ref_stat_type_code),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

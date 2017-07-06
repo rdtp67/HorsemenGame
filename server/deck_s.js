@@ -2,9 +2,10 @@ require('./run_s.js');
 //var sql = require('./mysql_s.js');
 var sql = require('./mysql_s.js');
 var util = require('util');//console.log("Run: " + util.inspect(run, {showHidden:false, depth:null}));//console.log("Run: " + util.inspect(run, false, null));
+require('./action_s.js');
 
 //read that using function Foo() gets better stack traces than var Foo = function() for constructers, look for into that
-Deck = function(room, did, dname, dhtype, ddesc, dcost, devent){
+Deck = function(room, did, dname, dhtype, ddesc, dcost, devent, dboost, dkeep){ //dhorse){
 
     var self = {
         id:did,
@@ -13,6 +14,9 @@ Deck = function(room, did, dname, dhtype, ddesc, dcost, devent){
         event:devent,
         desc:ddesc,
 		cost:dcost,
+		boost:dboost,
+		keep:dkeep,
+		//horse:dhorse, need to put this in use once horseman table complete
     }
 	
 	if(Deck.list[room] == undefined){
@@ -49,14 +53,25 @@ Deck.getTopRunCard = function(type, room){
 	return out;
 }
 
-Deck.getDeckCardAction = function(id,type, player){
+Deck.getCardByID = function(data){
+	var out = {};
+	for(var i in Deck.list[data.room].deck){
+		if(Deck.list[data.room].deck[i].id == data.id){
+			out = Deck.list[data.room].deck[i];
+			Deck.deadlist[data.room].deck.push(Deck.list[data.room].deck[i]);
+		}
+	}
+	return out;
+}
+
+Deck.getDeckCardAction = function(id,type, player, user_boost){
 	var room = player.room_id;
 	for(var i in Deck.deadlist[room].deck)
 	{
 		if(Deck.deadlist[room].deck[i].id == id)
 		{
 			var run_id = Deck.deadlist[room].deck[i].id;
-			Deck.deadlist[room].deck[i].event(Deck.getEventForCard(run_id, player, false));//need to change the hard coded false to bool boost passed in by user upon selecting card
+			Deck.deadlist[room].deck[i].event(Action.cardActionHandler(run_id, player, user_boost));//need to change the hard coded false to bool boost passed in by user upon selecting card
 			player.removeCardfromInvent(Deck.deadlist[room].deck[i].id);
 			return;
 		}
@@ -76,52 +91,16 @@ Deck.getDeckTypes = function(room){
 	return(out);
 }
 
-//Purpose: Get the card event for the card action requested
-//pulls the information from the database at this point for the one card
-//Pre: id: run_id for the run card needing event, player: player with the card
-Deck.getEventForCard = function(id, player, boost){
-	sql.getCardAction(id, function(err, result){
-		var run = {};//Will contain all run card instance for the id, index is on boost to tell the difference between standard and boost
-		if(!err){
-			for(var i in result){
-				let card = result[i];			
-				run[card.run_boost] = card;
-			}
-
-			let c_instance_type = (boost === true) ? 1 : 0; //run_boost 1: boosted, 0: not boosted (standard run card)
-			var c_instance = run[c_instance_type];
-
-			console.log("Run: " + util.inspect(c_instance, false, null));
-
-			if(c_instance.stat_id !== null){
-				player.statUpdate({atk_inc:c_instance.stat_atk_increase, 
-									atk_len:c_instance.stat_atk_turn_len, 
-									atk_perm:c_instance.stat_atk_perm,
-									def_inc:c_instance.stat_def_increase, 
-									def_len:c_instance.stat_def_turn_len, 
-									def_perm:c_instance.stat_def_perm,
-									dodge_inc:c_instance.stat_dodge_increase, 
-									dodge_len:c_instance.stat_dodge_turn_len, 
-									dodge_perm:c_instance.stat_dodge_perm,});
-			}
-
-			if(c_instance.power_crystal_id !== null){
-				player.powerCrystalModifier(c_instance.power_crystal_add);
-			}
-
-			if(c_instance.draw_id !== null){
-				player.drawCardUpdate(c_instance.draw_logic);
-			}
-
-			if(c_instance.health_id !== null){
-				player.healthUpdate({h_add:c_instance.health_add,
-									 h_perm:c_instance.health_above_max,});
-			}
-
-
-		}
-	});	
+Deck.getDeckCards = function(room){
+	var out = [];
+	for(var i = 0; i < Deck.list[room].deck.length; i++){
+		out.push(Deck.list[room].deck[i]);
+	}
+	console.log(out);
+	return(out);
 }
+
+
 
 //Desc: get the cost of the card
 //Pre: id: id of the current card, room: room id for the player
@@ -139,12 +118,13 @@ Deck.getCardCost = function(id, room){
 
 //Purpose: Populates the deck list with the card ids
 populateDeck = function(room){
+	//console.log("POP DECKS");
 	if(Deck.list[room] === undefined){
 		sql.getDeck(function(err, result){
 		if(!err){
-			for(var i in result){
-				Deck(room, result[i].run_id, result[i].run_name, result[i].run_type, result[i].run_desc, result[i].run_cost, function(){});
-				//console.log(room + " " + result[i].run_id + " " + result[i].run_name); //Populated deck output
+			for(var i = 0; i < result[0].length; i++){
+				Deck(room, result[0][i].run_id, result[0][i].run_name, result[0][i].run_type, result[0][i].run_desc, result[0][i].run_cost, function(){}, result[0][i].boost, result[0][i].keep, function(){});
+				//console.log(result[0][i].run_name + " " + result[0][i].boost + " " + result[0][i].keep);
 			}
 		}
 	});

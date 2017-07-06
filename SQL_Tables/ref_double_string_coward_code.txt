@@ -1,0 +1,9 @@
+create table ref_double_strike_code(
+ref_double_strike_coward_code INT NOT NULL AUTO_INCREMENT,
+double_strike_code TINYINT NOT NULL,
+dboule_strike_name varchar(80),
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(ref_double_strike_coward_code),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

@@ -8,7 +8,7 @@ Player_Cards = function(socket, server){
 
     self.addCard = function(data){
         if(self.socket){
-            self.items.push({id:data.id,type:data.type,name:data.name, type:data.type, desc:data.desc, cost:data.cost});
+            self.items.push({id:data.id,type:data.type,name:data.name, type:data.type, desc:data.desc, cost:data.cost, boost:data.boost});
             self.refreshRender();
         }
         return;
@@ -43,12 +43,26 @@ Player_Cards = function(socket, server){
         invent.innerHTML = "";
         var addButton = function(data){
             //let item = getRunCardItem(data, i);
+            let div = document.createElement('div');
+            let text = document.createElement('p');
             let button = document.createElement('button');
+            let button2 = document.createElement('button');
             button.onclick = function(){
-                getCardFunc(data.id, data.type);
+                getCardFunc(data.id, data.type, false); //need to add in a way to pass in boost bool
             }
-            button.innerText = "Name: " + data.name + " Type: " + data.type + " Desc: " + data.desc + " Cost: " + data.cost;
-            invent.appendChild(button);
+            button2.onclick = function(){
+                getCardFunc(data.id, data.type, true); //need to add in a way to pass in boost bool
+            }
+            button.innerText = "Play";
+            button2.innerText = "Boost";
+            text.innerText = "Name: " + data.name + " Type: " + data.type + " Desc: " + data.desc + " Cost: " + data.cost + " Boost: " + data.boost;
+            div.className = "card";
+            div.appendChild(text);
+            div.appendChild(button);
+            if(data.boost == 1){
+                div.appendChild(button2);
+            }
+            invent.appendChild(div);
         }
 
         for(var i = 0; i<self.items.length; i++){
@@ -83,7 +97,7 @@ Item("r1", "LoseLife", function(){
 
 
 //Helpers
-var getCardFunc = function(id, type){
-    socket.emit('cardAction', id, type);
+var getCardFunc = function(id, type, boost){
+    socket.emit('cardAction', id, type, boost);
     return;
 }

@@ -26,6 +26,7 @@
                 	socket.emit('addPlayerHeroCard',data.id);
 					heroPickDiv.style.display = 'none';
     				gameDiv.style.display = 'inline-block';
+					adminPageDiv.style.display = 'inline-block';
             	}
            		buttonh.innerText = data.title;
             	invent.appendChild(buttonh);

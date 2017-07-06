@@ -115,16 +115,16 @@ Draw_Card.getDrawCardAmounts = function(logic){
         let k = i-1;
         switch(str[i]){
             case 'd':
-                output.Death=str[k];
+                output.Death+=str[k];
                 break;
             case 'c':
-                output.Conquest=str[k];
+                output.Conquest+=str[k];
                 break;
             case 'w':
-                output.War=str[k];
+                output.War+=str[k];
                 break;
             case 'p':
-                output.Plauge=str[k];
+                output.Plauge+=str[k];
                 break;
             default:
                 break;

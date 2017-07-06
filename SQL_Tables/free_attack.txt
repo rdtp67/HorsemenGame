@@ -1,0 +1,9 @@
+create table free_attack(
+free_attack_id INT NOT NULL AUTO_INCREMENT,
+free_attack_damage_amount TINYINT DEFAULT 0,
+free_attack_ignor_defense TINYINT DEFAULT 0,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(free_attack_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

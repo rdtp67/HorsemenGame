@@ -19,7 +19,8 @@ const HEALTHMAX = 20; 			//This needs to be passed in, in the future
 Player = function(param){
 	var self = {
 		health:HEALTHMAX,
-		power_crystal:0,
+		power_crystal:100, //set to 0
+		power_crystal_used:0,
 	}
 	
 	self.name = param.username;
@@ -28,7 +29,7 @@ Player = function(param){
 	self.state = new State(param.socket, true);
 	self.player_cards = new Player_Cards(param.socket, true);
 	self.player_hero = null;
-	self.hero_type = "War"; // card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
+	self.hero_type = 3;// card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
 	self.action = "";
 	self.run_action = new Run_Action();
 	self.hero_action = new Hero_Action(param.socket, true);
@@ -39,6 +40,7 @@ Player = function(param){
 			room_id:self.room_id,
 			health:self.health,
 			power_crystal:self.power_crystal,	
+			power_crystal_used:self.power_crystal_used,
 			name:self.name,		
 			h_type:self.hero_type,
 			hero:self.player_hero,
@@ -54,6 +56,7 @@ Player = function(param){
 				room_id:self.room_id,
 				health:self.health,
 				power_crystal:self.power_crystal,
+				power_crystal_used:self.power_crystal_used,
 				hero:self.player_hero,
 				state:self.state,
 				action:self.action,
@@ -66,6 +69,10 @@ Player = function(param){
 		for(var i = 0; i < amount; i++)
 			self.player_cards.addCard(Deck.getTopRunCard(type, self.room_id));
 		return;
+	}
+
+	self.addCardtoInventByID = function(data){
+		self.player_cards.addCard(Deck.getCardByID(data));
 	}
 
 	self.removeCardfromInvent = function(id){
@@ -82,11 +89,14 @@ Player = function(param){
 		self.state.updateStates(states_info);
 	}
 
+	self.PCUsedUpdateToAmount = function(amount){
+		self.power_crystal_used = amount;
+	}
+
 	self.getHeroActionCard = function(hero_id){
             sql.getHeroActionInformation(hero_id, function(err, result){
                     if(!err){
                         for(var i in result){
-							console.log(i);
                             self.hero_action.actions.push({id:result[i].hero_action_id, cost:result[i].hero_action_cost, desc:result[i].hero_action_desc});
                         }
                     }
@@ -104,45 +114,56 @@ Player = function(param){
 		self.action = action_message;
 	}
 
+	/* Action effects */
+	self.PCUsedUpdate = function(used_amount){
+		self.power_crystal_used += used_amount;
+	}
+	self.statUpdateAtk = function(stat_inc, stat_len, stat_perm, stat_type){
+		if(stat_inc !== 0){
+			if(stat_perm === 0)
+			{
+				self.run_action.stat.atk_mod.push({atk_inc:stat_inc, atk_len:stat_len});
+				console.log(self.run_action.stat.atk_mod.length + " upAtk");
+			}
+			else
+				self.run_action.stat.atk_perm_mod = stat_perm;
+			self.run_action.stat.atk_mod_total += stat_inc;
+		}
+	}
+	self.statUpdateDef = function(stat_inc, stat_len, stat_perm, stat_type){
+
+		if(stat_inc !== 0){
+			if(stat_perm === 0)
+				self.run_action.stat.def_mod.push({def_inc:stat_inc, def_len:stat_len});
+			else
+				self.run_action.stat.def_perm_mod = stat_perm;
+			self.run_action.stat.def_mod_total += stat_inc;
+		}
+	}
+	self.statUpdateDodge = function(stat_inc, stat_len, stat_perm, stat_type){
+		if(stat_inc !== 0){
+			if(stat_perm === 0)
+				self.run_action.stat.dodge_mod.push({dodge_inc:stat_inc, dodge_len:stat_len});
+			else
+				self.run_action.stat.dodge_perm_mod = stat_perm;
+			self.run_action.stat.dodge_mod_total += stat_inc;
+		}
+	}
+	self.healthUpdate = function(add, perm){
+		var tempHealth = self.health + add;
+		if(tempHealth > HEALTHMAX && perm === 1){
+			self.healthModifier(add);
+		}
+		else if(tempHealth > HEALTHMAX && perm === 0){
+			self.healthModifier((HEALTHMAX - self.health));
+		}
+		else{
+			self.healthModifier(add);
+		}
+	}
 	self.healthModifier = function(total){
 		self.health += total;
 	}
-
-	self.powerCrystalModifier = function(total){
-		self.power_crystal += total;
-	}
-
-	self.statUpdate = function(data){
-		if(data.atk_inc !== 0){
-			if(data.atk_perm === 0)
-				self.run_action.stat.atk_mod.push({atk_inc:data.atk_inc, atk_len:data.atk_len});
-			else
-				self.run_action.stat.atk_perm_mod = data.atk_inc;
-			self.run_action.stat.atk_mod_total += data.atk_inc;
-		}
-
-		if(data.def_inc !== 0){
-			if(data.def_perm === 0)
-				self.run_action.stat.def_mod.push({def_inc:data.def_inc, def_len:data.def_len});
-			else
-				self.run_action.stat.def_perm_mod = data.def_inc;
-			self.run_action.stat.def_mod_total += data.def_inc;
-		}
-
-		if(data.dodge_inc !== 0){
-			if(data.dodge_perm === 0)
-				self.run_action.stat.dodge_mod.push({dodge_inc:data.dodge_inc, dodge_len:data.dodge_len});
-			else
-				self.run_action.stat.dodge_perm_mod = data.dodge_inc;
-			self.run_action.stat.dodge_mod_total += data.dodge_inc;
-		}
-		
-		console.log(data.atk_inc + " " + data.atk_perm + " " + data.atk_len + " " + self.run_action.stat.atk_mod_total);
-		console.log(data.def_inc + " " + data.def_perm + " " + data.def_len + " " + self.run_action.stat.def_mod_total);
-		console.log(data.dodge_inc + " " + data.dodge_perm + " " + data.dodge_len + " " + self.run_action.stat.dodge_mod_total);
-
-	}
-
 	//Need to fix this for the hard coded values
 	self.drawCardUpdate = function(logic){
 		var logic_out;
@@ -168,19 +189,21 @@ Player = function(param){
 
 		}
 	}
-
-	self.healthUpdate = function(data){
-		var tempHealth = self.health + data.h_add;
-		if(tempHealth > HEALTHMAX && data.h_perm === 1){
-			self.healthModifier(data.h_add);
-		}
-		else if(tempHealth > HEALTHMAX && data.h_perm === 0){
-			self.healthModifier((HEALTHMAX - self.health));
+	self.powerCrystalModifier = function(total){
+		self.power_crystal += total;
+	}
+	self.freeAttackEffect = function(dam, ig){
+		Player.attackOpponent(self.id, self.room_id, dam, ig);
+	}
+	self.statTypetoValueEffect = function(amount, type){
+		if(type === 4){//health
+			self.health = amount;
 		}
 		else{
-			self.healthModifier(data.h_add);
+
 		}
 	}
+	/* Action effects end */
 
 	Player.list[self.id] = self;
 	initPack[self.room_id] = {player:[]};
@@ -209,10 +232,13 @@ Player.onConnect = function(socket, name, room){
 			hero_l:Hero.getAllInitPack(room),
 		});
 
+		//Passes cards to admins upon load
+		socket.emit('adminPushCards', Deck.getDeckCards(player.room_id));
+
 		//Passes deck information to the player when first connecting
 		socket.emit('pushDecks', Deck.getDeckTypes(player.room_id));
 
-		socket.on('cardAction', function(id, type){
+		socket.on('cardAction', function(id, type, boost){
 			if(!player.player_cards.hasItem(id))
 			{
 				console.log("Cheater! Player ID: " + player.id);
@@ -223,24 +249,23 @@ Player.onConnect = function(socket, name, room){
 			}
 			else{
 				//Turned off for testing
-				if(player.state.play_cards){
-					Deck.getDeckCardAction(id, type, player);
+				//if(player.state.play_cards){
+					Deck.getDeckCardAction(id, type, player, boost);
 					console.log("Cost Play: " +  Deck.getCardCost(id, player.room_id));
-				}
+				//}
 			}
 		});
 
 		socket.on('heroActionAction', function(id){
-			console.log("Hero Action" + id);
-			Action.getHeroActions(id, player);
+			Action.heroActionHandler(id, player);
 		});
 		
 		socket.on('addRunCard', function(type){
 			//Turned off for testing
-			if(player.state.choose_card){
+			//if(player.state.choose_card){
 				player.addCardtoInvent(type);
 				player.updateStates({control:true,play_cards:true, activity:true});
-			}
+			//}
 		});
 
 		socket.on('removeCards', function(data){
@@ -268,10 +293,51 @@ Player.onConnect = function(socket, name, room){
 				player.power_crystal++;
 				player.health-=2;
 				player.updateAction("Took the cowards way out... Lost 2 life and gained 1 Power Crystal");
-				Player.list[getOpp(room, player.id)].updateAction("");
+				Player.list[getOppID(room, player.id)].updateAction("");
 				State.changeControl(Player.list, player.id, room);
 				player.updateStates();
 			}
+		});
+
+		socket.on('handleAdminRequest', function(data){
+			console.log(data.code);
+			if(data.code == 'draw'){
+				player.drawCardUpdate(data.input1);
+			}
+			else if(data.code == 'free_attack'){
+				player.freeAttackEffect(parseInt(data.input1), data.input2);
+			}
+			else if(data.code == 'health'){
+				player.healthUpdate(parseInt(data.input1), data.input2);
+			}
+			else if(data.code == 'power_crystal'){
+				player.powerCrystalModifier(parseInt(data.input1));
+			}
+			else if(data.code == 'stat'){
+				if(data.input4 == 1){
+					player.statUpdateAtk(parseInt(data.input1), parseInt(data.input2), data.input3, data.input4);
+				}
+				else if(data.input4 == 2){
+					player.statUpdateDef(parseInt(data.input1), parseInt(data.input2), data.input3, data.input4);
+				}
+				else if(data.input4 == 3){
+					player.statUpdateDodge(parseInt(data.input1), parseInt(data.input2), data.input3, data.input4);
+				}
+				else {
+
+				}
+			}
+			else if(data.code == 'stat_type_to_value'){
+				console.log(data.input2);
+				player.statTypetoValueEffect(parseInt(data.input1), parseInt(data.input2));
+			}	
+			else{
+
+			}
+		});
+
+		socket.on('handleAdminAddCard', function(data){
+			player.addCardtoInventByID(data);
 		});
 
 }
@@ -330,9 +396,9 @@ Player.update = function(){
 	return pack;
 }
 
-Player.attackOpponent = function(cur_id, room){
+Player.attackOpponent = function(cur_id, room, auto_damage = 0, ignore_def = 0){
 	
-	let opp_id = getOpp(room, cur_id);
+	let opp_id = getOppID(room, cur_id);
 
 	console.log("oppid " + opp_id);
 
@@ -352,7 +418,15 @@ Player.attackOpponent = function(cur_id, room){
 	}
 	else{
 		console.log("Dodge: " + opp_hero.dodge + " Mod: " + opp_mod + " Defense: " + opp_hero.defense + " Attack: " + atk_hero.attack);
-		let hitLost =  opp_hero.defense - atk_hero.attack;
+		let hitLost = 0;
+
+		if(ignore_def == 1){
+			hitLost = (auto_damage != 0) ? auto_damage : opp_hero.defense - atk_hero.attack;
+		}
+		else{
+			hitLost = (auto_damage != 0) ? opp_hero.defense + auto_damage : opp_hero.defense - atk_hero.attack;
+		}
+
 		Player.list[opp_id].healthModifier(hitLost);
 		Player.list[opp_id].updateAction("Took " + hitLost + " damage from the attack!");
 		Player.list[cur_id].updateAction("Attack effective. Attack strength " + atk_hero.attack + " was stronger than " + opp_hero.defense + " defense.");

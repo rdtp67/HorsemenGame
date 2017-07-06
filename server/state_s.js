@@ -42,13 +42,14 @@ State.assignStatesInitial = function(list, room, room_size){
 
 //Desc: Passes control from client to client, adds power crystal to client
 //Pre: list of all players, id of client with control, room number
-State.changeControl = function(list, cur_id, room){
+State.changeControl = function(list, cur_id, room, pcModAmount = 1, pcUsedResetAmount = 0){
     let player_list = getPlayersInRoom(list, room);
 
     for(var i in player_list){
         if(player_list[i].id !== cur_id){
             player_list[i].updateStates({control:true, choose_card:true});
-            player_list[i].powerCrystalModifier(1);
+            player_list[i].powerCrystalModifier(pcModAmount);
+            player_list[i].PCUsedUpdateToAmount(pcUsedResetAmount);
             player_list[i].run_action.stat.checkTurnEnd();
         }
     }

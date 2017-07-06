@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="/client/styles/game_style.css">
 <link rel="stylesheet" href="/client/styles/hero_style.css">
+<link rel="stylesheet" href="/client/styles/admin_style.css">
+<link rel="stylesheet" href="/client/styles/player_card.css">
 
 <div id="signDiv">
     Username: <input id="signDiv-username" type="text"></input><br>
@@ -43,6 +45,35 @@
 	</div>	
 </div>
 
+<div id="adminPageDiv" style="display:none;" class="admin_d">
+	<h1 class="adminHeader_h1">Admin Page</h1>
+	<h3>Direct Action</h3>
+	<select>
+		<option value="Player">Player</option>
+		<option value="Opp">Oppenent</option>
+	</select>
+	<h3>Select Card</h3>
+	<select id="adminAddCard"></select>
+	<button id="adminAddCardSubmit">Submit Card</button>
+	<h3>Select Effect</h3>
+	<select id="adminSelectEffect">
+		<option value="draw">Draw</option>
+		<option value="free_attack">Free Attack</option>
+		<option value="health">Health</option>
+		<option value="power_crystal">Power Crystal</option>
+		<option value="stat">Stat</option>
+		<option value="stat_type_to_value">Stat Type To Value</option>
+	</select>
+	<button onclick="adminEffectSelect()">Select Effect</button>
+	<form>
+		<h3 id="adminInput1">Input 1</h3><input type="text" id="input1"><br>
+		<h3 id="adminInput2">Input 2</h3><input type="text" id="input2"><br>
+		<h3 id="adminInput3">Input 3</h3><input type="text" id="input3"><br>
+		<h3 id="adminInput4">Input 4</h3><input type="text" id="input4"><br>
+	</form>
+	<button id="adminSubmitEffect">Submit Effect</button>
+</div>
+
 <script src="/client/js/player.js"></script>
 <script src="/client/js/state.js"></script>
 <!--<script src="/client/js/deck.js"></script>-->
@@ -53,6 +84,7 @@
 <script src="/client/js/draw.js"></script>
 <script src="/client/js/draw_hero.js"></script>
 <script src="/client/js/draw_cardLogic.js"></script>
+<script src="/client/js/admin.js"></script>
 <script>
 
 	var socket = io();
@@ -60,8 +92,7 @@
 
 	socket.on('connectToRoom',function(data){
           
-      });
-	
+      });	
 	
 	/******* Sign In *******/
     var signDiv = document.getElementById('signDiv');
@@ -154,6 +185,39 @@
 		heroAction.actions = actions;
 		heroAction.createHeroActionButtons();
 	});
+
+	/**** Admin Page ****/
+	var adminPageDiv = document.getElementById("adminPageDiv");
+	var ctx_ui_admin = document.getElementById("ctx-admin");
+	var adminSubmitEffect = document.getElementById('adminSubmitEffect');
+	var adminAddCardSubmit = document.getElementById('adminAddCardSubmit');
+
+	adminSubmitEffect.onclick = function(){
+		  	var effect = document.getElementById("adminSelectEffect").value;
+			var i1 = document.getElementById("input1").value;
+			var i2 = document.getElementById("input2").value;
+			var i3 = document.getElementById("input3").value;
+			var i4 = document.getElementById("input4").value; 
+		  	socket.emit('handleAdminRequest', {
+				  code:effect,
+				  input1:i1,
+				  input2:i2,
+				  input3:i3,
+				  input4:i4,
+			  });
+	  }
+
+	  adminAddCardSubmit.onclick = function(){
+		  var card = document.getElementById("adminAddCard").value;
+		  socket.emit('handleAdminAddCard', {
+			  id:card,
+			  room:room_id,
+		  });
+	  }
+
+	  socket.on('adminPushCards', function(card){
+		adminPushCards(card);
+	  });
 	
 	/******* Game *******/
 	
@@ -282,13 +346,13 @@ var createButton = function(i, deck_types){
 //Need a better way to get the images prob
 var getDeckImages = function(type){
 	switch(type){
-		case "Death":
+		case 2:
 			return '<img src="/client/img/death_card_temp.jpg" id="war_deck_pic" class="card">';
-		case "Plague":
+		case 4:
 			return '<img src="/client/img/plague_card_temp.jpg" id="war_deck_pic" class="card">';
-		case "War":
+		case 3:
 			return '<img src="/client/img/war_card_temp.jpg" id="war_deck_pic" class="card">';
-		case "Conquest":
+		case 1:
 			return '<img src="/client/img/conquest_card_temp.jpg" id="war_deck_pic" class="card">';
 		default:
 			return '<img src="/client/img/question_temp.jpg" id="question_temp.jpg" class="card">';

@@ -6,6 +6,7 @@
 		self.name = initPack.name;
 		self.health = initPack.health;
 		self.power_crystal = initPack.power_crystal;
+		self.power_crystal_used = initPack.power_crystal_used;
 		self.hero_type = initPack.h_type;
 		self.player_hero = initPack.hero;
 		self.state = new State(initPack.state);
@@ -33,6 +34,8 @@ var player_update = function(data){
 					p.health = pack.health;
 				if(pack.power_crystal !== undefined && pack.power_crystal !== p.power_crystal)
 					p.power_crystal = pack.power_crystal;
+				if(pack.power_crystal_used !== undefined && pack.power_crystal_used !== p.power_crystal_used)
+					p.power_crystal_used = pack.power_crystal_used;
 				if(pack.hero !== undefined && pack.hero !== p.player_hero)
 					p.player_hero = pack.hero;
 				if(pack.state !== undefined && pack.state !== p.state)

@@ -13,7 +13,7 @@ checkRoomExist = function(pack, room){
 //Deck: Finds the client's oppenent in the room, ** This will need to be modified for different sized rooms
 //Pre: room: room_id for the client, cur_id: id for the client
 //Post: return oppent player id
- getOpp = function(room, cur_id){
+ getOppID = function(room, cur_id){
 	var player_list = [];
 	Object.keys(Player.list).forEach(key => {
 		if(Player.list[key].room_id === room){
@@ -30,6 +30,28 @@ checkRoomExist = function(pack, room){
 	}
 
 	return opp_id
+}
+
+//Deck: Finds the client's oppenent in the room, ** This will need to be modified for different sized rooms
+//Pre: room: room_id for the client, cur_id: id for the client
+//Post: return oppent player
+ getOpp = function(room, cur_id){
+	var player_list = [];
+	Object.keys(Player.list).forEach(key => {
+		if(Player.list[key].room_id === room){
+			player_list.push(Player.list[key]);
+		}
+	});
+
+	let opp_id = null;
+
+	for(var i in player_list){
+		if(player_list[i].id !== cur_id){
+			opp_id = player_list[i];
+		}
+	}
+
+	return opp_id;
 }
 
 //Desc: Checks amount of players in room, alerts if room size is too large, passes information if ready to assign states to players
