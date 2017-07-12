@@ -1,0 +1,9 @@
+create table ref_keep_code(
+ref_keep_code_id INT NOT NULL AUTO_INCREMENT,
+ref_keep_code TINYINT NOT NULL,
+ref_keep_code_desc varchar(255),
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(ref_keep_code_id),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

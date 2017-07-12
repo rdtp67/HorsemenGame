@@ -8,7 +8,7 @@ Player_Cards = function(socket, server){
 
     self.addCard = function(data){
         if(self.socket){
-            self.items.push({id:data.id,type:data.type,name:data.name, type:data.type, desc:data.desc, cost:data.cost, boost:data.boost});
+            self.items.push({id:data.id,type:data.type,name:data.name, desc:data.desc, cost:data.cost, boost:data.boost});
             self.refreshRender();
         }
         return;
@@ -74,27 +74,6 @@ Player_Cards = function(socket, server){
     return self;
 
 }
-
-Item = function(id,name,event){
-    var self = {
-        id:id,
-        name:name,
-        event:event,
-    }
-
-    Item.List[self.id] = self;
-
-    return self;
-}
-
-Item.List = {};
-
-Item("r1", "LoseLife", function(){
-    Player.list[selfId].health++;
-    socket.emit('healthModifier', 1);
-    socket.emit('removeCards', 'r1');
-});
-
 
 //Helpers
 var getCardFunc = function(id, type, boost){

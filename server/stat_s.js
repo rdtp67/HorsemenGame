@@ -13,7 +13,7 @@ Stat = function(){
 
         dodge_base:0,
         dodge_mod_total:0,
-        dodge_perm_mode:0,
+        dodge_perm_mod:0,
         dodge_mod:[],
     }
 

@@ -2,13 +2,39 @@
 <link rel="stylesheet" href="/client/styles/hero_style.css">
 <link rel="stylesheet" href="/client/styles/admin_style.css">
 <link rel="stylesheet" href="/client/styles/player_card.css">
+<link rel="stylesheet" href="/client/styles/keep.css">
+<link rel="stylesheet" href="/client/styles/signin_style.css">
 
 <div id="signDiv">
-    Username: <input id="signDiv-username" type="text"></input><br>
-    Password: <input id="signDiv-password" type="password"></input>
-    <button id="signDiv-signIn">Sign In</button>
-    <button id="signDiv-signUp">Sign Up</button>
-	<div id="roomOutput"></div>
+	<div id="signin_mainwindow">
+		<header id="signin_top_header">
+		<h1>Welcome to the game!</h1>
+		</header>
+
+		<nav id="signin_menu">
+			<ul>
+				<li>Home</li>
+				<li>News</li>
+				<li>About</li>
+			</ul>
+		</nav>
+
+		<section id="signin_main">
+			Username: <input id="signDiv-username" type="text"></input><br>
+			Password: <input id="signDiv-password" type="password"></input>
+			<button id="signDiv-signIn">Sign In</button>
+			<button id="signDiv-signUp">Sign Up</button>
+			<div id="roomOutput"></div>
+		</section>
+
+		<aside id="signin_sidepanel">
+			<h4>News</h4>
+		</aside>
+
+		<footer id="signin_footer">
+			Copyright horsemenBois 2017
+		</footer>
+	</div>
 </div>
 
 <div id="heroPickDiv" style="display:none;">
@@ -37,6 +63,7 @@
 	</form>
 
 	<div id="user_cards"></div>
+	<div id="user_keep"></div>
 	<div id="user_hero"></div>
 	<div id="hero_actions"></div>
 	<div id="player_actions">
@@ -80,6 +107,7 @@
 <script src="/client/js/hero.js"></script>
 <script src="/client/js/socket.js"></script>
 <script src="/client/js/player_cards.js"></script>
+<script src="/client/js/keep.js"></script>
 <script src="/client/js/hero_action.js"></script>
 <script src="/client/js/draw.js"></script>
 <script src="/client/js/draw_hero.js"></script>
@@ -170,6 +198,12 @@
 		chatInput.value = '';
 		
 	}
+	/**** Keep ****/
+	var keepCards = new Keep(socket, false);
+	socket.on('updateKeepCards', function(items){
+		keepCards.items = items;
+		keepCards.refreshRender();
+	});
 	
 	/****** Cards *******/
 	

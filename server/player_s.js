@@ -5,6 +5,7 @@ require('./enums_s');
 require('./deck_s.js');
 require('./state_s.js');
 require('../client/js/player_cards');
+require('../client/js/keep');
 require('./helpers_s.js');
 require('./run_action_s.js');
 require('../client/js/hero_action');
@@ -28,6 +29,7 @@ Player = function(param){
 	self.room_id = param.room_id;
 	self.state = new State(param.socket, true);
 	self.player_cards = new Player_Cards(param.socket, true);
+	self.keep_cards = new Keep(param.socket, true);
 	self.player_hero = null;
 	self.hero_type = 3;// card_types[Math.floor(Math.random() * card_types.length)]; //Create Randomizer
 	self.action = "";
@@ -67,12 +69,18 @@ Player = function(param){
 
 	self.addCardtoInvent = function(type, amount = 1){
 		for(var i = 0; i < amount; i++)
+			Action.keepActionHandler(self, 2);
 			self.player_cards.addCard(Deck.getTopRunCard(type, self.room_id));
 		return;
 	}
 
 	self.addCardtoInventByID = function(data){
+		Action.keepActionHandler(self, 2);
 		self.player_cards.addCard(Deck.getCardByID(data));
+	}
+
+	self.addCardtoKeepInventbyID = function(data){
+		self.keep_cards.addKeepCard(data);
 	}
 
 	self.removeCardfromInvent = function(id){
@@ -123,10 +131,9 @@ Player = function(param){
 			if(stat_perm === 0)
 			{
 				self.run_action.stat.atk_mod.push({atk_inc:stat_inc, atk_len:stat_len});
-				console.log(self.run_action.stat.atk_mod.length + " upAtk");
 			}
 			else
-				self.run_action.stat.atk_perm_mod = stat_perm;
+				self.run_action.stat.atk_perm_mod += stat_inc;
 			self.run_action.stat.atk_mod_total += stat_inc;
 		}
 	}
@@ -136,7 +143,7 @@ Player = function(param){
 			if(stat_perm === 0)
 				self.run_action.stat.def_mod.push({def_inc:stat_inc, def_len:stat_len});
 			else
-				self.run_action.stat.def_perm_mod = stat_perm;
+				self.run_action.stat.def_perm_mod += stat_inc;
 			self.run_action.stat.def_mod_total += stat_inc;
 		}
 	}
@@ -145,7 +152,7 @@ Player = function(param){
 			if(stat_perm === 0)
 				self.run_action.stat.dodge_mod.push({dodge_inc:stat_inc, dodge_len:stat_len});
 			else
-				self.run_action.stat.dodge_perm_mod = stat_perm;
+				self.run_action.stat.dodge_perm_mod += stat_inc;
 			self.run_action.stat.dodge_mod_total += stat_inc;
 		}
 	}
@@ -198,6 +205,19 @@ Player = function(param){
 	self.statTypetoValueEffect = function(amount, type){
 		if(type === 4){//health
 			self.health = amount;
+		}
+		else if(type === 6){//perm attack
+			self.run_action.stat.atk_mod_total += (amount - self.run_action.stat.atk_perm_mod);
+			self.run_action.stat.atk_perm_mod = amount;
+		}
+		else if(type === 7){//perm def
+			self.run_action.stat.def_mod_total += (amount - self.run_action.stat.def_perm_mod);
+			self.run_action.stat.def_perm_mod = amount;
+		}
+		else if(type === 8){//perm dodge
+			console.log(self.run_action.stat.dodge_mod_total + " " + amount + " " + self.run_action.stat.dodge_perm_mod);
+			self.run_action.stat.dodge_mod_total += (amount - self.run_action.stat.dodge_perm_mod);
+			self.run_action.stat.dodge_perm_mod = amount;
 		}
 		else{
 
@@ -400,12 +420,12 @@ Player.attackOpponent = function(cur_id, room, auto_damage = 0, ignore_def = 0){
 	
 	let opp_id = getOppID(room, cur_id);
 
-	console.log("oppid " + opp_id);
+	Action.keepActionHandler(Player.list[opp_id], 1);
 
 	let opp_hero = Hero.list[Player.list[opp_id].player_hero];
 	let atk_hero = Hero.list[Player.list[cur_id].player_hero];
 	let opp_mod = Math.floor(Math.random() * 6);
-	if((opp_hero.dodge + opp_mod) > atk_hero.attack){
+	if((opp_hero.dodge + opp_mod) >= atk_hero.attack){
 		console.log("Dodge: " + opp_hero.dodge + " Mod: " + opp_mod + " Attack: " + atk_hero.attack);
 		Player.list[opp_id].updateAction("Dodge effective! " + opp_hero.dodge + " dodge + " + opp_mod + " modifier = " + (opp_hero.dodge + opp_mod));
 		Player.list[cur_id].updateAction("Attack failed. Attack strength " + atk_hero.attack + " was avoided with " + (opp_hero.dodge + opp_mod) + " dodge");

@@ -1,0 +1,10 @@
+create table ref_has_hero_code(
+ref_has_hero_code_id INT NOT NULL AUTO_INCREMENT,
+has_hero_code TINYINT NOT NULL,
+ref_has_hero_code_desc varchar(80) NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(ref_has_hero_code_id),
+UNIQUE(has_hero_code),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)

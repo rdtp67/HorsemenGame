@@ -95,6 +95,27 @@ exports.getHeroActionAction = function(id,callback){
     });
 }
 
+exports.getKeepCardAction = function(run_id, callback){
+   pool.getConnection(function(err, conn){
+        if(err){
+            console.log(err.code);
+            console.log(err.fatal);
+        }
+        else{
+            var sqlString = "call getKeepCardAction(?);";
+            conn.query(sqlString,[run_id], function(err, rows, fields){
+                if(!err){
+                    callback(null, rows);
+                }
+                else{
+                    console.log('Error ~ getKeepCardAction() ~ mysql_s');
+                }
+            });
+        }
+        conn.release();
+    }); 
+}
+
 /*
     Purpose: Gets all information needed for the hero table to be used to create a List of Heros
     Pre: callback ~ funcation used to return information

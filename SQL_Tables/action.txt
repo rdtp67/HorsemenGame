@@ -29,5 +29,6 @@ FOREIGN KEY(free_attack_id) REFERENCES free_attack(free_attack_id),
 FOREIGN KEY(stat_type_to_value_id) REFERENCES stat_type_to_value(stat_type_to_value_id),
 FOREIGN KEY(directed_code) REFERENCES ref_directed_code(directed_code),
 FOREIGN KEY(boost_code) REFERENCES ref_boost_code(boost_code),
+FOREIGN KEY(action_keep) REFERENCES ref_keep_code(keep_code),
 FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
 )

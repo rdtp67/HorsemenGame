@@ -1,0 +1,11 @@
+create table has_hero(
+has_hero_id INT NOT NULL AUTO_INCREMENT,
+hero_id INT DEFAULT NULL,
+has_hero_code TINYINT NOT NULL,
+upsrt_user INT NOT NULL,
+upsrt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY(has_hero_id),
+FOREIGN KEY(hero_id) REFERENCES hero(hero_id),
+FOREIGN KEY(has_hero_code) REFERENCES ref_has_hero_code(has_hero_code),
+FOREIGN KEY(upsrt_user) REFERENCES user(user_id)
+)
